@@ -6,6 +6,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppFooter } from "@/components/layout/app-footer";
+import { CookieConsentProvider } from "@/components/cookie/cookie-consent-provider";
 import "../globals.css";
 
 const inter = Inter({
@@ -53,9 +54,11 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} className={`${inter.variable} antialiased`}>
       <body className="flex min-h-screen flex-col">
         <NextIntlClientProvider messages={messages}>
-          <AppHeader />
-          <main className="flex-1">{children}</main>
-          <AppFooter />
+          <CookieConsentProvider>
+            <AppHeader />
+            <main className="flex-1">{children}</main>
+            <AppFooter />
+          </CookieConsentProvider>
         </NextIntlClientProvider>
       </body>
     </html>

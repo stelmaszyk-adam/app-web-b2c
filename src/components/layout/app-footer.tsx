@@ -1,5 +1,9 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import { ArrowUpRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { useCookieConsentContext } from "@/components/cookie/cookie-consent-provider";
 
 const ORGANIZER_DASHBOARD_URL = "https://dashboard.eventapp.dev";
 
@@ -8,6 +12,7 @@ const CITIES = ["Poznan", "Krakow", "Warszawa", "Wroclaw"] as const;
 export function AppFooter() {
   const t = useTranslations("footer");
   const year = new Date().getFullYear();
+  const { openPreferences } = useCookieConsentContext();
 
   return (
     <footer className="bg-surface-high border-outline mt-8 border-t px-6 pb-6 pt-12">
@@ -153,20 +158,20 @@ export function AppFooter() {
               </a>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                href="/cookie-policy"
                 className="text-on-surface hover:text-primary text-sm"
               >
                 {t("cookiePolicy")}
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="text-on-surface hover:text-primary text-sm"
+              <button
+                onClick={openPreferences}
+                className="text-on-surface hover:text-primary text-left text-sm"
               >
                 {t("manageCookies")}
-              </a>
+              </button>
             </li>
           </ul>
         </div>
