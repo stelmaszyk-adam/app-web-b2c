@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Map as MapIcon, List, MapPin } from "lucide-react";
+import { Map as MapIcon, List, MapPin, X } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import type { MockEvent } from "@/lib/types";
 import type { CategorySlug } from "@/lib/categories";
@@ -39,6 +39,7 @@ export function DiscoveryView({
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showMobileMap, setShowMobileMap] = useState(false);
   const [happeningNow, setHappeningNow] = useState(false);
 
   const filteredEvents = useMemo(() => {
@@ -94,7 +95,7 @@ export function DiscoveryView({
           <span className="text-on-surface">{city.namePl}</span>
         </button>
 
-        <div className="flex items-center gap-1">
+        <div className="hidden items-center gap-1 lg:flex">
           <button
             onClick={() => setViewMode("split")}
             className={`flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] transition-colors ${
@@ -134,11 +135,50 @@ export function DiscoveryView({
 
       {/* Content */}
       <div className="mx-auto w-full max-w-[1440px] px-6 py-4 max-md:px-3">
+        {/* Mobile: always list, map via FAB overlay */}
+        {/* Desktop: split or list based on viewMode toggle */}
         {viewMode === "split" ? (
-          <div className="flex gap-4 max-lg:flex-col" style={{ minHeight: "70vh" }}>
-            {/* Event list */}
-            <div className="flex w-full flex-col gap-3 overflow-y-auto lg:w-[420px] lg:shrink-0" style={{ maxHeight: "70vh" }}>
-              <p className="text-on-surface-variant text-xs font-medium">
+          <>
+            {/* Desktop split view */}
+            <div className="hidden gap-4 lg:flex" style={{ minHeight: "70vh" }}>
+              <div className="flex w-[420px] shrink-0 flex-col gap-3 overflow-y-auto" style={{ maxHeight: "70vh" }}>
+                <p className="text-on-surface-variant text-xs font-medium">
+                  {filteredEvents.length} {t("eventsFound")}
+                </p>
+                {filteredEvents.length === 0 ? (
+                  <div className="bg-surface-low flex flex-col items-center justify-center rounded-[var(--radius-lg)] py-12">
+                    <p className="text-on-surface text-sm font-medium">
+                      {t("noEventsFound")}
+                    </p>
+                    <p className="text-on-surface-variant mt-1 text-xs">
+                      {t("noEventsFoundDesc")}
+                    </p>
+                  </div>
+                ) : (
+                  filteredEvents.map((event) => (
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      isHighlighted={hoveredEventId === event.id}
+                      onMouseEnter={() => setHoveredEventId(event.id)}
+                      onMouseLeave={() => setHoveredEventId(null)}
+                    />
+                  ))
+                )}
+              </div>
+              <div className="sticky top-20 flex-1 overflow-hidden rounded-[var(--radius-lg)]">
+                <EventMap
+                  events={filteredEvents}
+                  center={{ lat: city.lat, lng: city.lng }}
+                  onEventHover={setHoveredEventId}
+                  highlightedEventId={hoveredEventId}
+                />
+              </div>
+            </div>
+
+            {/* Mobile list (shown when split mode is active on mobile) */}
+            <div className="lg:hidden">
+              <p className="text-on-surface-variant mb-3 text-xs font-medium">
                 {filteredEvents.length} {t("eventsFound")}
               </p>
               {filteredEvents.length === 0 ? (
@@ -151,30 +191,16 @@ export function DiscoveryView({
                   </p>
                 </div>
               ) : (
-                filteredEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    isHighlighted={hoveredEventId === event.id}
-                    onMouseEnter={() => setHoveredEventId(event.id)}
-                    onMouseLeave={() => setHoveredEventId(null)}
-                  />
-                ))
+                <div className="flex flex-col gap-3">
+                  {filteredEvents.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
               )}
             </div>
-
-            {/* Map */}
-            <div className="flex-1 overflow-hidden rounded-[var(--radius-lg)] max-lg:h-[50vh] lg:sticky lg:top-20">
-              <EventMap
-                events={filteredEvents}
-                center={{ lat: city.lat, lng: city.lng }}
-                onEventHover={setHoveredEventId}
-                highlightedEventId={hoveredEventId}
-              />
-            </div>
-          </div>
+          </>
         ) : (
-          // List-only view
+          // List-only view (desktop)
           <div>
             <p className="text-on-surface-variant mb-3 text-xs font-medium">
               {filteredEvents.length} {t("eventsFound")}
@@ -198,6 +224,40 @@ export function DiscoveryView({
           </div>
         )}
       </div>
+
+      {/* Mobile Map FAB */}
+      <button
+        onClick={() => setShowMobileMap(true)}
+        className="bg-primary fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full px-5 py-3 text-white shadow-lg transition-transform active:scale-95 lg:hidden"
+      >
+        <MapIcon className="h-5 w-5" strokeWidth={1.75} />
+        <span className="text-sm font-semibold">{t("mapView")}</span>
+      </button>
+
+      {/* Mobile full-screen map overlay */}
+      {showMobileMap && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/50 lg:hidden">
+          <div className="bg-surface flex h-full flex-col">
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-on-surface text-sm font-semibold">
+                {filteredEvents.length} {t("eventsFound")}
+              </span>
+              <button
+                onClick={() => setShowMobileMap(false)}
+                className="bg-surface-low flex h-9 w-9 items-center justify-center rounded-full"
+              >
+                <X className="h-5 w-5" strokeWidth={1.75} />
+              </button>
+            </div>
+            <div className="flex-1">
+              <EventMap
+                events={filteredEvents}
+                center={{ lat: city.lat, lng: city.lng }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Overlays */}
       {showCityPicker && (

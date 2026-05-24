@@ -9,13 +9,13 @@
 
 ## Objective
 
-Implement the primary discovery surface of the Web B2C application: an interactive MapLibre GL JS-powered map (with MapTiler tiles) with event pins, clustering, and filters, alongside SSR city and category listing pages that are SEO-ready from day one. This is the main landing experience for all users arriving at the site.
+Implement the primary discovery surface of the Web B2C application: an interactive MapLibre GL JS-powered map (with Stadia Maps tiles) with event pins, clustering, and filters, alongside SSR city and category listing pages that are SEO-ready from day one. This is the main landing experience for all users arriving at the site.
 
 ## Deliverables
 
 ### 1. Map and Discovery Page
 
-- [ ] P0 Main page: map with event pins (MapLibre GL JS + MapTiler — see [ARCHITECTURE.md ADR #17](../../documentation/ARCHITECTURE.md#11-key-architectural-decisions-log))
+- [ ] P0 Main page: map with event pins (MapLibre GL JS + Stadia Maps — see [ARCHITECTURE.md ADR #17](../../documentation/ARCHITECTURE.md#11-key-architectural-decisions-log))
 - [ ] P0 Pin clustering at high zoom-out
 - [ ] P0 Custom pin icons per unified category (same 12 categories as mobile — see [central roadmap](../../documentation/ROADMAP.md#unified-category-system))
 - [ ] P0 Category filter (multiselect)
@@ -47,7 +47,7 @@ Implement the primary discovery surface of the Web B2C application: an interacti
 
 ## Acceptance Criteria
 
-- The main page (`/`) loads MapLibre GL JS with MapTiler tiles and renders event pins on the map
+- The main page (`/`) loads MapLibre GL JS with Stadia Maps tiles and renders event pins on the map
 - Pins are clustered when multiple events overlap at the current zoom level
 - Each of the 12 unified categories has a distinct custom pin icon with matching category color
 - Category multiselect filter updates visible pins and event list without a full page reload

@@ -34,7 +34,7 @@ function buildGeoJSON(events: MockEvent[]): GeoJSON.FeatureCollection {
   };
 }
 
-const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
+const STADIA_KEY = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY ?? "";
 
 export function EventMap({
   events,
@@ -47,15 +47,15 @@ export function EventMap({
   const [selectedEvent, setSelectedEvent] = useState<MockEvent | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
-  const styleUrl = MAPTILER_KEY
-    ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+  const styleUrl = STADIA_KEY
+    ? `https://tiles.stadiamaps.com/styles/alidade_smooth.json?api_key=${STADIA_KEY}`
     : undefined;
 
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // If no MapTiler key, use fallback view
+    // If no Stadia Maps key, use fallback view
     if (!styleUrl) return;
 
     const map = new maplibregl.Map({
@@ -87,8 +87,13 @@ export function EventMap({
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(cat.slug[0].toUpperCase(), 12, 12);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          map.addImage(`pin-${cat.slug}`, {
+            width: canvas.width,
+            height: canvas.height,
+            data: imageData.data,
+          });
         }
-        map.addImage(`pin-${cat.slug}`, canvas as unknown as ImageBitmap);
       }
 
       // Add clustered source
@@ -242,7 +247,7 @@ export function EventMap({
     }
   }, [events, mapReady]);
 
-  // If no MapTiler key, show fallback
+  // If no Stadia Maps key, show fallback
   if (!styleUrl) {
     return (
       <FallbackMap
@@ -269,7 +274,7 @@ export function EventMap({
   );
 }
 
-// Fallback map when no MapTiler API key is configured
+// Fallback map when no Stadia Maps API key is configured
 function FallbackMap({
   events,
   onEventHover,
@@ -306,7 +311,7 @@ function FallbackMap({
         }}
       />
       <div className="text-on-surface-muted absolute left-4 top-4 text-xs font-medium">
-        Map Preview (set NEXT_PUBLIC_MAPTILER_API_KEY for MapTiler tiles)
+        Map Preview (set NEXT_PUBLIC_STADIA_MAPS_API_KEY for Stadia Maps tiles)
       </div>
 
       {events.map((event) => {
