@@ -7,5 +7,36 @@
     "heading": "EventApp",
     "subheading": "Discover the best events in your city.",
     "browseEvents": "Browse events"
+  },
+  "header": {
+    "selectCity": "Select city",
+    "searchPlaceholder": "Search events, venues, artists…",
+    "forOrganizers": "For Organizers",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "tagline": "Discover concerts, clubs, exhibitions and events in Polish cities. Your local scene, in one place.",
+    "downloadAppStore": "Download on App Store",
+    "downloadGooglePlay": "Get it on Google Play",
+    "discover": "Discover",
+    "categories": "Categories",
+    "forBusiness": "For Business",
+    "legal": "Legal",
+    "organizerDashboard": "Organizer Dashboard",
+    "organizerDashboardDescription": "Manage your venue, create events, and track analytics",
+    "advertising": "Advertising",
+    "contact": "Contact",
+    "terms": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "manageCookies": "Manage cookies",
+    "copyright": "© {year} eventapp · All rights reserved",
+    "allCities": "All cities",
+    "music": "Music",
+    "clubs": "Clubs",
+    "theatre": "Theatre",
+    "art": "Art",
+    "sport": "Sport"
   }
 }

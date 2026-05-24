@@ -7,5 +7,36 @@
     "heading": "EventApp",
     "subheading": "Odkryj najlepsze wydarzenia w Twoim mieście.",
     "browseEvents": "Przeglądaj wydarzenia"
+  },
+  "header": {
+    "selectCity": "Wybierz miasto",
+    "searchPlaceholder": "Szukaj wydarzeń, miejsc, artystów…",
+    "forOrganizers": "Dla Organizatorów",
+    "openMenu": "Otwórz menu",
+    "closeMenu": "Zamknij menu"
+  },
+  "footer": {
+    "tagline": "Odkrywaj koncerty, kluby, wystawy i wydarzenia w polskich miastach. Twoja lokalna scena, w jednym miejscu.",
+    "downloadAppStore": "Pobierz w App Store",
+    "downloadGooglePlay": "Zainstaluj z Google Play",
+    "discover": "Odkryj",
+    "categories": "Kategorie",
+    "forBusiness": "Dla biznesu",
+    "legal": "Prawne",
+    "organizerDashboard": "Panel Organizatora",
+    "organizerDashboardDescription": "Zarządzaj miejscem, dodawaj wydarzenia, śledź statystyki",
+    "advertising": "Reklama",
+    "contact": "Kontakt",
+    "terms": "Regulamin",
+    "privacyPolicy": "Polityka prywatności",
+    "cookiePolicy": "Polityka cookies",
+    "manageCookies": "Zarządzaj cookies",
+    "copyright": "© {year} eventapp · Wszystkie prawa zastrzeżone",
+    "allCities": "Wszystkie miasta",
+    "music": "Muzyka",
+    "clubs": "Kluby",
+    "theatre": "Teatr",
+    "art": "Sztuka",
+    "sport": "Sport"
   }
 }
