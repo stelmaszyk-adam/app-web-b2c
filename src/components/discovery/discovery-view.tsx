@@ -2,15 +2,14 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Map as MapIcon, List, MapPin, X } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
+import { Map as MapIcon, List, MapPin, X, Locate } from "lucide-react";
 import type { MockEvent } from "@/lib/types";
 import type { CategorySlug } from "@/lib/categories";
 import type { City } from "@/lib/cities";
+import { useCity } from "@/hooks/use-city";
 import { EventMap } from "@/components/map/event-map";
 import { FilterBar } from "./filter-bar";
 import { EventCard } from "./event-card";
-import { CityPicker } from "./city-picker";
 import { DatePicker } from "./date-picker";
 
 interface DiscoveryViewProps {
@@ -25,7 +24,11 @@ export function DiscoveryView({
   initialCategories,
 }: DiscoveryViewProps) {
   const t = useTranslations("discovery");
-  const router = useRouter();
+  const {
+    openCityPicker,
+    geoStatus,
+    requestGeolocation,
+  } = useCity();
 
   const [selectedCategories, setSelectedCategories] = useState<CategorySlug[]>(
     initialCategories ?? [],
@@ -37,7 +40,6 @@ export function DiscoveryView({
   } | null>(null);
   const [viewMode, setViewMode] = useState<"split" | "list">("split");
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
-  const [showCityPicker, setShowCityPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showMobileMap, setShowMobileMap] = useState(false);
   const [happeningNow, setHappeningNow] = useState(false);
@@ -67,14 +69,6 @@ export function DiscoveryView({
     );
   }, []);
 
-  const handleCitySelect = useCallback(
-    (citySlug: string) => {
-      setShowCityPicker(false);
-      router.push(`/${citySlug}`);
-    },
-    [router],
-  );
-
   const handleDateApply = useCallback(
     (from: string, to: string, label: string) => {
       setDateFilter({ from, to, label });
@@ -88,7 +82,7 @@ export function DiscoveryView({
       {/* Top bar: city + view toggle */}
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-6 py-3 max-md:px-3">
         <button
-          onClick={() => setShowCityPicker(true)}
+          onClick={openCityPicker}
           className="inline-flex items-center gap-1.5 text-lg font-bold"
         >
           <MapPin className="text-primary h-5 w-5" strokeWidth={1.75} />
@@ -135,8 +129,6 @@ export function DiscoveryView({
 
       {/* Content */}
       <div className="mx-auto w-full max-w-[1440px] px-6 py-4 max-md:px-3">
-        {/* Mobile: always list, map via FAB overlay */}
-        {/* Desktop: split or list based on viewMode toggle */}
         {viewMode === "split" ? (
           <>
             {/* Desktop split view */}
@@ -167,16 +159,23 @@ export function DiscoveryView({
                 )}
               </div>
               <div className="sticky top-20 flex-1 overflow-hidden rounded-[var(--radius-lg)]">
-                <EventMap
-                  events={filteredEvents}
-                  center={{ lat: city.lat, lng: city.lng }}
-                  onEventHover={setHoveredEventId}
-                  highlightedEventId={hoveredEventId}
-                />
+                <div className="relative h-full">
+                  <EventMap
+                    events={filteredEvents}
+                    center={{ lat: city.lat, lng: city.lng }}
+                    onEventHover={setHoveredEventId}
+                    highlightedEventId={hoveredEventId}
+                  />
+                  <GeolocationButton
+                    geoStatus={geoStatus}
+                    onRequestGeolocation={requestGeolocation}
+                    onOpenCityPicker={openCityPicker}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Mobile list (shown when split mode is active on mobile) */}
+            {/* Mobile list */}
             <div className="lg:hidden">
               <p className="text-on-surface-variant mb-3 text-xs font-medium">
                 {filteredEvents.length} {t("eventsFound")}
@@ -200,7 +199,6 @@ export function DiscoveryView({
             </div>
           </>
         ) : (
-          // List-only view (desktop)
           <div>
             <p className="text-on-surface-variant mb-3 text-xs font-medium">
               {filteredEvents.length} {t("eventsFound")}
@@ -249,24 +247,22 @@ export function DiscoveryView({
                 <X className="h-5 w-5" strokeWidth={1.75} />
               </button>
             </div>
-            <div className="flex-1">
+            <div className="relative flex-1">
               <EventMap
                 events={filteredEvents}
                 center={{ lat: city.lat, lng: city.lng }}
+              />
+              <GeolocationButton
+                geoStatus={geoStatus}
+                onRequestGeolocation={requestGeolocation}
+                onOpenCityPicker={openCityPicker}
               />
             </div>
           </div>
         </div>
       )}
 
-      {/* Overlays */}
-      {showCityPicker && (
-        <CityPicker
-          currentCity={city.slug}
-          onSelectCity={handleCitySelect}
-          onClose={() => setShowCityPicker(false)}
-        />
-      )}
+      {/* Date picker overlay */}
       {showDatePicker && (
         <DatePicker
           onApply={handleDateApply}
@@ -277,6 +273,55 @@ export function DiscoveryView({
           onClose={() => setShowDatePicker(false)}
         />
       )}
+    </div>
+  );
+}
+
+function GeolocationButton({
+  geoStatus,
+  onRequestGeolocation,
+  onOpenCityPicker,
+}: {
+  geoStatus: string;
+  onRequestGeolocation: () => void;
+  onOpenCityPicker: () => void;
+}) {
+  const t = useTranslations("discovery");
+
+  // After denial: show "Location unavailable — select your city"
+  if (geoStatus === "denied" || geoStatus === "unavailable") {
+    return (
+      <div className="absolute bottom-4 right-4 z-10">
+        <button
+          onClick={onOpenCityPicker}
+          className="bg-surface-high/95 text-on-surface border-outline flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium shadow-lg backdrop-blur-sm transition-colors hover:bg-white"
+        >
+          <MapPin className="text-on-surface-variant h-4 w-4" strokeWidth={1.75} />
+          {t("locationUnavailable")}
+        </button>
+      </div>
+    );
+  }
+
+  // After successful geolocation, hide the button
+  if (geoStatus === "granted") return null;
+
+  // Default: show "Use my location"
+  return (
+    <div className="absolute bottom-4 right-4 z-10">
+      <button
+        onClick={onRequestGeolocation}
+        disabled={geoStatus === "prompting"}
+        className="bg-surface-high/95 text-on-surface border-outline flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium shadow-lg backdrop-blur-sm transition-colors hover:bg-white disabled:opacity-60"
+      >
+        <Locate
+          className={`text-primary h-4 w-4 ${geoStatus === "prompting" ? "animate-pulse" : ""}`}
+          strokeWidth={1.75}
+        />
+        {geoStatus === "prompting"
+          ? t("locating")
+          : t("useMyLocation")}
+      </button>
     </div>
   );
 }

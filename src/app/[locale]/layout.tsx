@@ -6,6 +6,8 @@ import { routing } from "@/i18n/routing";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppFooter } from "@/components/layout/app-footer";
 import { CookieConsentProvider } from "@/components/cookie/cookie-consent-provider";
+import { CityProvider } from "@/hooks/use-city";
+import { CityPickerOverlay } from "@/components/discovery/city-picker-overlay";
 
 type Props = {
   children: React.ReactNode;
@@ -45,11 +47,14 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <CookieConsentProvider>
-        <AppHeader />
-        <main className="flex-1">{children}</main>
-        <AppFooter />
-      </CookieConsentProvider>
+      <CityProvider>
+        <CookieConsentProvider>
+          <AppHeader />
+          <main className="flex-1">{children}</main>
+          <AppFooter />
+          <CityPickerOverlay />
+        </CookieConsentProvider>
+      </CityProvider>
     </NextIntlClientProvider>
   );
 }

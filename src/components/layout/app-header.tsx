@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { useCity } from "@/hooks/use-city";
 
 const ORGANIZER_DASHBOARD_URL = "https://dashboard.eventapp.dev";
 
@@ -19,6 +20,7 @@ export function AppHeader() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const { city, openCityPicker } = useCity();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function switchLocale(newLocale: string) {
@@ -42,13 +44,14 @@ export function AppHeader() {
           </span>
         </Link>
 
-        {/* City Selector */}
+        {/* City Selector — "Change city" always visible */}
         <button
+          onClick={openCityPicker}
           className="bg-surface-high border-outline text-on-surface hover:bg-surface-low inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-sm font-medium transition-colors"
-          aria-label={t("selectCity")}
+          aria-label={t("changeCity")}
         >
           <MapPin className="h-4 w-4" strokeWidth={1.75} />
-          <span className="max-sm:hidden">Poznan</span>
+          <span className="max-sm:hidden">{city.namePl}</span>
           <ChevronDown className="h-3.5 w-3.5" strokeWidth={1.75} />
         </button>
 
