@@ -19,8 +19,19 @@ function notifyListeners() {
   listeners.forEach((l) => l());
 }
 
+let cachedSnapshot: ConsentCategories | null = null;
+let cachedRaw: string | null = null;
+
 function getSnapshot(): ConsentCategories | null {
-  return getStoredConsent()?.categories ?? null;
+  const raw =
+    typeof window !== "undefined"
+      ? localStorage.getItem("eventapp_cookie_consent")
+      : null;
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    cachedSnapshot = getStoredConsent()?.categories ?? null;
+  }
+  return cachedSnapshot;
 }
 
 function getServerSnapshot(): ConsentCategories | null {
@@ -36,6 +47,7 @@ export function useCookieConsent() {
 
   const saveConsent = useCallback((categories: ConsentCategories) => {
     setStoredConsent(categories);
+    cachedRaw = null;
     notifyListeners();
   }, []);
 

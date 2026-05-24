@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -7,12 +6,6 @@ import { routing } from "@/i18n/routing";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppFooter } from "@/components/layout/app-footer";
 import { CookieConsentProvider } from "@/components/cookie/cookie-consent-provider";
-import "../globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "latin-ext"],
-});
 
 type Props = {
   children: React.ReactNode;
@@ -51,16 +44,12 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${inter.variable} antialiased`}>
-      <body className="flex min-h-screen flex-col">
-        <NextIntlClientProvider messages={messages}>
-          <CookieConsentProvider>
-            <AppHeader />
-            <main className="flex-1">{children}</main>
-            <AppFooter />
-          </CookieConsentProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      <CookieConsentProvider>
+        <AppHeader />
+        <main className="flex-1">{children}</main>
+        <AppFooter />
+      </CookieConsentProvider>
+    </NextIntlClientProvider>
   );
 }
