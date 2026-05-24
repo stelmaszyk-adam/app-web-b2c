@@ -17,6 +17,10 @@ export const MOCK_EVENTS: MockEvent[] = [
       "Niemiecki kompozytor i pianista po raz pierwszy w Poznaniu. Dwie godziny improwizacji na fortepianie, syntezatorach i organach.",
     badges: ["fast"],
     city: "poznan",
+    endDate: "2026-05-24T22:00:00",
+    eventPhotos: ["/mock/event-1.jpg", "/mock/event-2.jpg", "/mock/event-3.jpg"],
+    ticketUrl: "https://bilety.example.com/nils-frahm",
+    scoutUsername: "MelomanPoznan",
   },
   {
     id: "e2",
@@ -51,6 +55,18 @@ export const MOCK_EVENTS: MockEvent[] = [
       "Cotygodniowa noc techno w SQ. Tym razem na żywo Recondite — mistrz minimalistycznego, melancholijnego brzmienia.",
     badges: ["recur"],
     city: "poznan",
+    endDate: "2026-05-28T04:00:00",
+    ticketUrl: "https://bilety.example.com/techno-tuesday",
+    source: "GoOut",
+    recurrence: {
+      type: "weekly",
+      instances: [
+        { id: "e3", date: "Wt, 27 maja", time: "23:00", startDate: "2026-05-27T23:00:00" },
+        { id: "e3-r1", date: "Wt, 3 cze", time: "23:00", startDate: "2026-06-03T23:00:00" },
+        { id: "e3-r2", date: "Wt, 10 cze", time: "23:00", startDate: "2026-06-10T23:00:00" },
+        { id: "e3-r3", date: "Wt, 17 cze", time: "23:00", startDate: "2026-06-17T23:00:00" },
+      ],
+    },
   },
   {
     id: "e4",
@@ -72,6 +88,7 @@ export const MOCK_EVENTS: MockEvent[] = [
       "Retrospektywa jednego z najważniejszych polskich artystów XX wieku. 60 obrazów, instalacja site-specific.",
     badges: ["free"],
     city: "poznan",
+    endDate: "2026-06-30T18:00:00",
   },
   {
     id: "e5",
@@ -216,6 +233,15 @@ export const MOCK_EVENTS: MockEvent[] = [
     description: "Cotygodniowa sesja porannej yogi na otwartej trawie.",
     badges: ["recur"],
     city: "poznan",
+    endDate: "2026-05-25T08:00:00",
+    recurrence: {
+      type: "weekly",
+      instances: [
+        { id: "e12", date: "Nd, 25 maja", time: "07:00", startDate: "2026-05-25T07:00:00" },
+        { id: "e12-r1", date: "Nd, 1 cze", time: "07:00", startDate: "2026-06-01T07:00:00" },
+        { id: "e12-r2", date: "Nd, 8 cze", time: "07:00", startDate: "2026-06-08T07:00:00" },
+      ],
+    },
   },
   // Krakow events
   {

@@ -43,3 +43,7 @@ export async function fetchEvents(
 
   return filtered;
 }
+
+export async function fetchEventById(id: string): Promise<MockEvent | null> {
+  return MOCK_EVENTS.find((e) => e.id === id) ?? null;
+}
