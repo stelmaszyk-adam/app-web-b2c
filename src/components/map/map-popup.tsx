@@ -1,6 +1,7 @@
 "use client";
 
 import { X, Clock, MapPin } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { CATEGORY_MAP } from "@/lib/categories";
 import type { MockEvent } from "@/lib/types";
 
@@ -56,12 +57,12 @@ export function MapPopup({ event, onClose, inline }: MapPopupProps) {
               ? "Bezpłatne"
               : `od ${event.priceFrom} zł`}
           </span>
-          <a
-            href="#"
+          <Link
+            href={`/${event.city}/event/${event.id}`}
             className="text-primary text-xs font-medium hover:underline"
           >
             Zobacz szczegóły
-          </a>
+          </Link>
         </div>
       </div>
     </div>

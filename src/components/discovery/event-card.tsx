@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock, MapPin, Heart } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { CATEGORY_MAP } from "@/lib/categories";
 import type { MockEvent } from "@/lib/types";
 
@@ -20,6 +21,10 @@ export function EventCard({
   const cat = CATEGORY_MAP[event.category];
 
   return (
+    <Link
+      href={`/${event.city}/event/${event.id}`}
+      className="block"
+    >
     <article
       className={`bg-surface-high group flex gap-3 rounded-[var(--radius-lg)] p-3 transition-all ${
         isHighlighted
@@ -100,5 +105,6 @@ export function EventCard({
         </div>
       </div>
     </article>
+    </Link>
   );
 }
