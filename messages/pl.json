@@ -1,0 +1,11 @@
+{
+  "metadata": {
+    "title": "EventApp - Odkryj wydarzenia w Twoim mieście",
+    "description": "Odkryj najlepsze wydarzenia w polskich miastach. Koncerty, wystawy, festiwale i więcej."
+  },
+  "home": {
+    "heading": "EventApp",
+    "subheading": "Odkryj najlepsze wydarzenia w Twoim mieście.",
+    "browseEvents": "Przeglądaj wydarzenia"
+  }
+}

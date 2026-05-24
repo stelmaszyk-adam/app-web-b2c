@@ -1,0 +1,11 @@
+{
+  "metadata": {
+    "title": "EventApp - Discover events in your city",
+    "description": "Discover the best events in Polish cities. Concerts, exhibitions, festivals and more."
+  },
+  "home": {
+    "heading": "EventApp",
+    "subheading": "Discover the best events in your city.",
+    "browseEvents": "Browse events"
+  }
+}
