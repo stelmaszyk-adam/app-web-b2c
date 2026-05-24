@@ -1,0 +1,48 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EventApp API",
+    "version": "0.0.1",
+    "description": "Placeholder spec — replace with backend's /api/docs-json once available."
+  },
+  "servers": [
+    {
+      "url": "{apiUrl}",
+      "variables": {
+        "apiUrl": {
+          "default": "http://localhost:3000"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": { "type": "string", "example": "ok" }
+                      },
+                      "required": ["status"]
+                    }
+                  },
+                  "required": ["data"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

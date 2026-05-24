@@ -1,0 +1,315 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   PRIMITIVES — raw palette, never used directly in components
+   ============================================================ */
+:root {
+  /* Purple (Brand Primary) */
+  --purple-50: #f3eeff;
+  --purple-100: #e6dcfe;
+  --purple-200: #c9b0fc;
+  --purple-300: #a97ef8;
+  --purple-400: #8c56f4;
+  --purple-500: #6c3feb;
+  --purple-600: #5a2fd0;
+  --purple-700: #4622a8;
+  --purple-800: #341a82;
+  --purple-900: #21125a;
+
+  /* Amber (Tertiary/Accent) */
+  --amber-50: #fff8ed;
+  --amber-100: #ffeccc;
+  --amber-200: #ffd699;
+  --amber-300: #ffc066;
+  --amber-400: #ffb84d;
+  --amber-500: #ff9920;
+  --amber-600: #f97316;
+  --amber-700: #b84400;
+
+  /* Gray (Blue-Violet Tinted Neutrals) */
+  --gray-50: #f8f8fb;
+  --gray-100: #f1f1f6;
+  --gray-150: #e8e8f0;
+  --gray-200: #dcdce8;
+  --gray-300: #c4c4d4;
+  --gray-400: #9898b0;
+  --gray-500: #6c6c88;
+  --gray-600: #525272;
+  --gray-700: #34344e;
+  --gray-800: #22223a;
+  --gray-900: #10101e;
+  --gray-950: #07071a;
+}
+
+/* ============================================================
+   SEMANTIC TOKENS — Light Mode (default)
+   ============================================================ */
+:root {
+  /* Brand */
+  --primary: var(--purple-500);
+  --primary-container: var(--purple-50);
+  --on-primary: #ffffff;
+  --brand-gradient: linear-gradient(135deg, #6c3feb 0%, #a97ef8 100%);
+
+  /* Secondary */
+  --secondary: var(--purple-400);
+  --secondary-container: var(--purple-100);
+  --on-secondary: #ffffff;
+
+  /* Tertiary / Accent */
+  --tertiary: var(--amber-600);
+  --tertiary-container: var(--amber-100);
+  --on-tertiary: #ffffff;
+
+  /* Surfaces */
+  --surface: var(--gray-50);
+  --surface-low: var(--gray-100);
+  --surface-mid: var(--gray-150);
+  --surface-high: #ffffff;
+  --on-surface: var(--gray-900);
+  --on-surface-variant: var(--gray-500);
+  --on-surface-muted: var(--gray-400);
+
+  /* Outline */
+  --outline: var(--gray-200);
+  --outline-strong: var(--gray-300);
+
+  /* Semantic / Feedback */
+  --destructive: #e5484d;
+  --destructive-container: #ffe8e8;
+  --on-destructive: #ffffff;
+  --success: #2e7d32;
+  --success-container: #e8f5e9;
+  --on-success: #ffffff;
+  --warning: #f57c00;
+  --warning-container: #fff3e0;
+  --on-warning: #ffffff;
+  --info: var(--purple-500);
+  --info-container: var(--purple-50);
+  --on-info: #ffffff;
+  --live-red: #e5484d;
+
+  /* Glass / Blur */
+  --glass-light: rgba(255, 255, 255, 0.18);
+  --glass-medium: rgba(255, 255, 255, 0.32);
+  --glass-heavy: rgba(255, 255, 255, 0.58);
+  --backdrop-blur: 16px;
+
+  /* Shadows */
+  --shadow-sm:
+    0 1px 2px rgba(15, 15, 30, 0.04), 0 1px 1px rgba(15, 15, 30, 0.04);
+  --shadow-md:
+    0 2px 4px rgba(15, 15, 30, 0.06), 0 4px 6px rgba(15, 15, 30, 0.07);
+  --shadow-lg:
+    0 4px 8px rgba(15, 15, 30, 0.06), 0 10px 20px rgba(15, 15, 30, 0.08);
+  --shadow-xl:
+    0 8px 16px rgba(15, 15, 30, 0.08), 0 20px 40px rgba(15, 15, 30, 0.12);
+  --shadow-brand: 0 6px 18px rgba(108, 63, 235, 0.28);
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Typography — Letter Spacing */
+  --tracking-tight: -0.649px;
+  --tracking-normal: -0.313px;
+  --tracking-wide: 1.2px;
+
+  /* Icon Sizes */
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+
+  /* Stroke Weights */
+  --stroke-thin: 1px;
+  --stroke-regular: 1.5px;
+  --stroke-medium: 2px;
+
+  /* Opacity */
+  --opacity-hover: 0.04;
+  --opacity-pressed: 0.12;
+  --opacity-disabled: 0.38;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  /* Category Colors */
+  --cat-music: #6c3feb;
+  --cat-club: #ec4899;
+  --cat-art: #16a34a;
+  --cat-food: #e5484d;
+  --cat-sport: #0ea5e9;
+  --cat-theatre: #2563eb;
+  --cat-comedy: #f59e0b;
+  --cat-tech: #475569;
+  --cat-film: #7c3aed;
+  --cat-festival: #f97316;
+  --cat-wellness: #14b8a6;
+  --cat-kids: #eab308;
+}
+
+/* ============================================================
+   SEMANTIC TOKENS — Dark Mode
+   ============================================================ */
+.dark {
+  --primary: var(--purple-400);
+  --primary-container: #1a0f3d;
+  --on-primary: var(--purple-900);
+
+  --secondary: var(--purple-300);
+  --secondary-container: var(--purple-700);
+  --on-secondary: var(--purple-900);
+
+  --tertiary: var(--amber-500);
+  --tertiary-container: #3d2300;
+  --on-tertiary: var(--amber-700);
+
+  --surface: var(--gray-950);
+  --surface-low: #1c1c32;
+  --surface-mid: #22223a;
+  --surface-high: var(--gray-900);
+  --on-surface: #ffffff;
+  --on-surface-variant: #9898b0;
+  --on-surface-muted: var(--gray-500);
+
+  --outline: #2a2a44;
+  --outline-strong: #2e2e48;
+
+  --glass-light: rgba(255, 255, 255, 0.08);
+  --glass-medium: rgba(255, 255, 255, 0.14);
+  --glass-heavy: rgba(255, 255, 255, 0.22);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 1px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.35), 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.4), 0 10px 20px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.45), 0 20px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================
+   TAILWIND THEME — maps CSS variables to utility classes
+   ============================================================ */
+@theme inline {
+  /* Brand Colors */
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary: var(--on-secondary);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
+
+  /* Surface Colors */
+  --color-surface: var(--surface);
+  --color-surface-low: var(--surface-low);
+  --color-surface-mid: var(--surface-mid);
+  --color-surface-high: var(--surface-high);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-surface-muted: var(--on-surface-muted);
+
+  /* Outline */
+  --color-outline: var(--outline);
+  --color-outline-strong: var(--outline-strong);
+
+  /* Semantic */
+  --color-destructive: var(--destructive);
+  --color-destructive-container: var(--destructive-container);
+  --color-on-destructive: var(--on-destructive);
+  --color-success: var(--success);
+  --color-success-container: var(--success-container);
+  --color-on-success: var(--on-success);
+  --color-warning: var(--warning);
+  --color-warning-container: var(--warning-container);
+  --color-on-warning: var(--on-warning);
+  --color-info: var(--info);
+  --color-info-container: var(--info-container);
+  --color-on-info: var(--on-info);
+  --color-live-red: var(--live-red);
+
+  /* Glass */
+  --color-glass-light: var(--glass-light);
+  --color-glass-medium: var(--glass-medium);
+  --color-glass-heavy: var(--glass-heavy);
+
+  /* Category Colors */
+  --color-cat-music: var(--cat-music);
+  --color-cat-club: var(--cat-club);
+  --color-cat-art: var(--cat-art);
+  --color-cat-food: var(--cat-food);
+  --color-cat-sport: var(--cat-sport);
+  --color-cat-theatre: var(--cat-theatre);
+  --color-cat-comedy: var(--cat-comedy);
+  --color-cat-tech: var(--cat-tech);
+  --color-cat-film: var(--cat-film);
+  --color-cat-festival: var(--cat-festival);
+  --color-cat-wellness: var(--cat-wellness);
+  --color-cat-kids: var(--cat-kids);
+
+  /* Shadows */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-brand: var(--shadow-brand);
+
+  /* Border Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-full: var(--radius-full);
+
+  /* Font */
+  --font-sans: var(--font-inter);
+
+  /* Transitions */
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+  --transition-duration-fast: var(--duration-fast);
+  --transition-duration-base: var(--duration-base);
+  --transition-duration-slow: var(--duration-slow);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+body {
+  background: var(--surface);
+  color: var(--on-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
