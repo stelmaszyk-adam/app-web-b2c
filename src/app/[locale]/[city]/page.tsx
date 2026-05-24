@@ -1,0 +1,58 @@
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { getCityBySlug, CITIES } from "@/lib/cities";
+import { fetchEvents } from "@/lib/api";
+import { DiscoveryView } from "@/components/discovery/discovery-view";
+
+type Props = {
+  params: Promise<{ locale: string; city: string }>;
+};
+
+export async function generateStaticParams() {
+  return CITIES.map((city) => ({ city: city.slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+  if (!city) return {};
+
+  const t = await getTranslations({ locale, namespace: "discovery" });
+
+  return {
+    title: t("cityMetaTitle", { city: city.namePl }),
+    description: t("cityMetaDescription", { city: city.namePl }),
+  };
+}
+
+export default async function CityPage({ params }: Props) {
+  const { city: citySlug } = await params;
+  const city = getCityBySlug(citySlug);
+
+  if (!city) {
+    notFound();
+  }
+
+  const events = await fetchEvents({ city: citySlug });
+
+  return (
+    <>
+      {/* SSR event data for SEO */}
+      <div className="sr-only" aria-hidden="true">
+        <h1>
+          Wydarzenia w {city.namePl} — {events.length} wydarzeń
+        </h1>
+        <ul>
+          {events.map((event) => (
+            <li key={event.id}>
+              {event.title} — {event.venue.name} — {event.date} {event.time}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <DiscoveryView events={events} city={city} />
+    </>
+  );
+}
