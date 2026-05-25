@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { Inter } from "next/font/google";
 
 const inter = Inter({
@@ -17,7 +18,7 @@ export default function GlobalError({
   unstable_retry: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    Sentry.captureException(error);
   }, [error]);
 
   return (

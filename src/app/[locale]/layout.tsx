@@ -10,6 +10,8 @@ import { CityProvider } from "@/hooks/use-city";
 import { CityPickerOverlay } from "@/components/discovery/city-picker-overlay";
 import { ErrorToastProvider } from "@/components/ui/error-toast";
 import { OfflineBanner } from "@/components/ui/offline-banner";
+import { PostHogProvider } from "@/components/analytics/posthog-provider";
+import { WebVitalsReporter } from "@/components/analytics/web-vitals-reporter";
 
 type Props = {
   children: React.ReactNode;
@@ -51,6 +53,8 @@ export default async function LocaleLayout({ children, params }: Props) {
     <NextIntlClientProvider messages={messages}>
       <CityProvider>
         <CookieConsentProvider>
+          <PostHogProvider />
+          <WebVitalsReporter />
           <ErrorToastProvider>
             <OfflineBanner />
             <AppHeader />

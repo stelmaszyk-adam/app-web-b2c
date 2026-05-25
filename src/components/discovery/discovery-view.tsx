@@ -9,6 +9,7 @@ import type { City } from "@/lib/cities";
 import { useCity } from "@/hooks/use-city";
 import { EventMap } from "@/components/map/event-map";
 import { NoEventsEmptyState } from "@/components/ui/empty-state";
+import { trackMapView } from "@/lib/analytics";
 import { FilterBar } from "./filter-bar";
 import { EventCard } from "./event-card";
 import { DatePicker } from "./date-picker";
@@ -232,7 +233,10 @@ export function DiscoveryView({
 
       {/* Mobile Map FAB */}
       <button
-        onClick={() => setShowMobileMap(true)}
+        onClick={() => {
+          setShowMobileMap(true);
+          trackMapView(city.slug);
+        }}
         className="bg-primary fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full px-5 py-3 text-white shadow-lg transition-transform active:scale-95 lg:hidden"
       >
         <MapIcon className="h-5 w-5" strokeWidth={1.75} />

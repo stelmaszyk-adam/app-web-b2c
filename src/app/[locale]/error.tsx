@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { useTranslations } from "next-intl";
 import { RefreshCw, Home, AlertTriangle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -15,7 +16,7 @@ export default function ErrorPage({
   const t = useTranslations("errors");
 
   useEffect(() => {
-    console.error(error);
+    Sentry.captureException(error);
   }, [error]);
 
   return (

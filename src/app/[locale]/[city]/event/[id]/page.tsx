@@ -7,6 +7,12 @@ import { CATEGORY_MAP } from "@/lib/categories";
 import { EventDetailContent } from "@/components/event/event-detail-content";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildEventJsonLd } from "@/lib/structured-data";
+import { TrackEventDetailView } from "@/components/analytics/track-event-detail";
+import {
+  TrackedTicketLink,
+  TrackedNavigateLink,
+  TrackedSmartBannerLink,
+} from "@/components/analytics/tracked-event-links";
 
 type Props = {
   params: Promise<{ locale: string; city: string; id: string }>;
@@ -81,6 +87,7 @@ export default async function EventDetailPage({ params }: Props) {
 
   return (
     <article className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 lg:px-8">
+      <TrackEventDetailView eventId={event.id} eventTitle={event.title} />
       <JsonLd data={buildEventJsonLd(event)} />
       {/* SSR-visible content for SEO — always in raw HTML */}
       <div className="mb-6">
@@ -213,7 +220,8 @@ export default async function EventDetailPage({ params }: Props) {
 
             {/* Buy tickets CTA */}
             {event.ticketUrl && (
-              <a
+              <TrackedTicketLink
+                eventId={event.id}
                 href={event.ticketUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -230,11 +238,11 @@ export default async function EventDetailPage({ params }: Props) {
                   <path d="M13 5v2M13 17v2M13 11v2" />
                 </svg>
                 {t("buyTickets")}
-              </a>
+              </TrackedTicketLink>
             )}
 
             {/* Navigate CTA */}
-            <a
+            <TrackedNavigateLink
               href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue.address + ", " + city.namePl)}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -250,7 +258,7 @@ export default async function EventDetailPage({ params }: Props) {
                 <polygon points="3 11 22 2 13 21 11 13 3 11" />
               </svg>
               {t("navigate")}
-            </a>
+            </TrackedNavigateLink>
           </div>
 
           {/* Smart banner: Save event in app */}
@@ -258,22 +266,24 @@ export default async function EventDetailPage({ params }: Props) {
             <p className="text-on-surface text-sm font-semibold">{t("saveInApp")}</p>
             <p className="text-on-surface-variant mt-1 text-xs">{t("saveInAppDesc")}</p>
             <div className="mt-3 flex gap-2">
-              <a
+              <TrackedSmartBannerLink
+                context="save_event_ios"
                 href="https://apps.apple.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-lg bg-on-surface px-3 py-1.5 text-xs font-medium text-surface"
               >
                 {t("appStore")}
-              </a>
-              <a
+              </TrackedSmartBannerLink>
+              <TrackedSmartBannerLink
+                context="save_event_android"
                 href="https://play.google.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-lg bg-on-surface px-3 py-1.5 text-xs font-medium text-surface"
               >
                 {t("googlePlay")}
-              </a>
+              </TrackedSmartBannerLink>
             </div>
           </div>
 
@@ -284,22 +294,24 @@ export default async function EventDetailPage({ params }: Props) {
             </p>
             <p className="text-on-surface-variant mt-1 text-xs">{t("followVenueInAppDesc")}</p>
             <div className="mt-3 flex gap-2">
-              <a
+              <TrackedSmartBannerLink
+                context="follow_venue_ios"
                 href="https://apps.apple.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-lg bg-on-surface px-3 py-1.5 text-xs font-medium text-surface"
               >
                 {t("appStore")}
-              </a>
-              <a
+              </TrackedSmartBannerLink>
+              <TrackedSmartBannerLink
+                context="follow_venue_android"
                 href="https://play.google.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-lg bg-on-surface px-3 py-1.5 text-xs font-medium text-surface"
               >
                 {t("googlePlay")}
-              </a>
+              </TrackedSmartBannerLink>
             </div>
           </div>
         </aside>

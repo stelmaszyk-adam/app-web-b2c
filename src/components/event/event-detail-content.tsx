@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { MockEvent } from "@/lib/types";
 import { EventImage } from "@/components/ui/event-image";
+import { trackEventShare } from "@/lib/analytics";
 
 interface EventDetailContentProps {
   event: MockEvent;
@@ -122,6 +123,8 @@ function ShareButton({
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
     const prefix = locale === "pl" ? "" : `/${locale}`;
     const url = `${baseUrl}${prefix}/${citySlug}/event/${eventId}`;
+
+    trackEventShare(eventId);
 
     try {
       await navigator.clipboard.writeText(url);
