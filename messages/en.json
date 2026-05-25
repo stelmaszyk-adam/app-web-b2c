@@ -146,6 +146,28 @@
     "claimVenue": "Is this your venue?",
     "claimVenueLink": "Claim it on the Organizer Dashboard"
   },
+  "errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you're looking for doesn't exist or has been moved.",
+    "backToHome": "Back to homepage",
+    "searchPlaceholder": "Search events, venues…",
+    "serverErrorTitle": "Something went wrong",
+    "serverErrorDescription": "An unexpected error occurred. Please try again or go back to the homepage.",
+    "tryAgain": "Try again",
+    "apiErrorMessage": "Failed to load data. Please try again.",
+    "retry": "Retry",
+    "dismiss": "Dismiss",
+    "offlineTitle": "No internet connection",
+    "offlineDescription": "Check your network connection and try again."
+  },
+  "emptyStates": {
+    "noEventsTitle": "No events to display",
+    "noEventsDescription": "Try changing your filters, selecting a different date, or checking another city.",
+    "clearFilters": "Clear filters",
+    "changeCity": "Change city",
+    "noVenueEventsTitle": "No upcoming events",
+    "noVenueEventsDescription": "This venue has no scheduled events. Follow it in the app to get notified about new dates."
+  },
   "cookieConsent": {
     "bannerTitle": "We use cookies",
     "bannerDescription": "We use cookies to improve your experience, analyze traffic, and personalize content. You can accept all or manage your preferences.",

@@ -5,6 +5,7 @@ import { getCityBySlug } from "@/lib/cities";
 import { fetchVenueById, fetchEventsByVenueId } from "@/lib/api";
 import { CATEGORY_MAP } from "@/lib/categories";
 import { VenueProfileContent } from "@/components/venue/venue-profile-content";
+import { NoVenueEventsEmptyState } from "@/components/ui/empty-state";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildPlaceJsonLd } from "@/lib/structured-data";
 
@@ -263,21 +264,7 @@ export default async function VenueProfilePage({ params }: Props) {
           <section className="mt-8">
             <h2 className="text-on-surface mb-3 text-xl font-semibold">{t("upcomingEventsTitle")}</h2>
             {upcomingEvents.length === 0 ? (
-              <div className="bg-surface-low rounded-[var(--radius-xl)] px-6 py-8 text-center">
-                <svg
-                  className="text-on-surface-muted mx-auto h-10 w-10"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <p className="text-on-surface-variant mt-3">{t("noUpcomingEvents")}</p>
-              </div>
+              <NoVenueEventsEmptyState />
             ) : (
               <div className="flex flex-col gap-3">
                 {upcomingEvents.map((ev) => {

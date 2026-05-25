@@ -146,6 +146,28 @@
     "claimVenue": "To Twoje miejsce?",
     "claimVenueLink": "Przejmij je w Panelu Organizatora"
   },
+  "errors": {
+    "notFoundTitle": "Strona nie została znaleziona",
+    "notFoundDescription": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "backToHome": "Strona główna",
+    "searchPlaceholder": "Szukaj wydarzeń, miejsc…",
+    "serverErrorTitle": "Coś poszło nie tak",
+    "serverErrorDescription": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie lub wróć na stronę główną.",
+    "tryAgain": "Spróbuj ponownie",
+    "apiErrorMessage": "Nie udało się załadować danych. Spróbuj ponownie.",
+    "retry": "Ponów",
+    "dismiss": "Zamknij",
+    "offlineTitle": "Brak połączenia z internetem",
+    "offlineDescription": "Sprawdź swoje połączenie sieciowe i spróbuj ponownie."
+  },
+  "emptyStates": {
+    "noEventsTitle": "Brak wydarzeń do wyświetlenia",
+    "noEventsDescription": "Spróbuj zmienić filtry, wybrać inną datę lub sprawdzić inne miasto.",
+    "clearFilters": "Wyczyść filtry",
+    "changeCity": "Zmień miasto",
+    "noVenueEventsTitle": "Brak nadchodzących wydarzeń",
+    "noVenueEventsDescription": "To miejsce nie ma zaplanowanych wydarzeń. Obserwuj je w aplikacji, aby otrzymywać powiadomienia o nowych terminach."
+  },
   "cookieConsent": {
     "bannerTitle": "Uzywamy plikow cookie",
     "bannerDescription": "Wykorzystujemy ciasteczka, by ulepszac Twoje doswiadczenie, analizowac ruch i personalizowac tresci. Mozesz zaakceptowac wszystkie albo zarzadzac preferencjami.",

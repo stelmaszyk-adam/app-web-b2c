@@ -8,6 +8,8 @@ import { AppFooter } from "@/components/layout/app-footer";
 import { CookieConsentProvider } from "@/components/cookie/cookie-consent-provider";
 import { CityProvider } from "@/hooks/use-city";
 import { CityPickerOverlay } from "@/components/discovery/city-picker-overlay";
+import { ErrorToastProvider } from "@/components/ui/error-toast";
+import { OfflineBanner } from "@/components/ui/offline-banner";
 
 type Props = {
   children: React.ReactNode;
@@ -49,10 +51,13 @@ export default async function LocaleLayout({ children, params }: Props) {
     <NextIntlClientProvider messages={messages}>
       <CityProvider>
         <CookieConsentProvider>
-          <AppHeader />
-          <main className="flex-1">{children}</main>
-          <AppFooter />
-          <CityPickerOverlay />
+          <ErrorToastProvider>
+            <OfflineBanner />
+            <AppHeader />
+            <main className="flex-1">{children}</main>
+            <AppFooter />
+            <CityPickerOverlay />
+          </ErrorToastProvider>
         </CookieConsentProvider>
       </CityProvider>
     </NextIntlClientProvider>

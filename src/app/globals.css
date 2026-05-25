@@ -80,12 +80,17 @@
   --destructive: #e5484d;
   --destructive-container: #ffe8e8;
   --on-destructive: #ffffff;
+  --error: #d32f2f;
+  --error-container: #fce4ec;
+  --on-error: #ffffff;
+  --on-error-container: #5c1010;
   --success: #2e7d32;
   --success-container: #e8f5e9;
   --on-success: #ffffff;
   --warning: #f57c00;
   --warning-container: #fff3e0;
   --on-warning: #ffffff;
+  --on-warning-container: #5c2e00;
   --info: var(--purple-500);
   --info-container: var(--purple-50);
   --on-info: #ffffff;
@@ -246,9 +251,14 @@
   --color-warning: var(--warning);
   --color-warning-container: var(--warning-container);
   --color-on-warning: var(--on-warning);
+  --color-on-warning-container: var(--on-warning-container);
   --color-info: var(--info);
   --color-info-container: var(--info-container);
   --color-on-info: var(--on-info);
+  --color-error: var(--error);
+  --color-error-container: var(--error-container);
+  --color-on-error: var(--on-error);
+  --color-on-error-container: var(--on-error-container);
   --color-live-red: var(--live-red);
 
   /* Glass */

@@ -8,6 +8,7 @@ import type { CategorySlug } from "@/lib/categories";
 import type { City } from "@/lib/cities";
 import { useCity } from "@/hooks/use-city";
 import { EventMap } from "@/components/map/event-map";
+import { NoEventsEmptyState } from "@/components/ui/empty-state";
 import { FilterBar } from "./filter-bar";
 import { EventCard } from "./event-card";
 import { DatePicker } from "./date-picker";
@@ -77,6 +78,13 @@ export function DiscoveryView({
     [],
   );
 
+  const hasActiveFilters = selectedCategories.length > 0 || dateFilter !== null;
+
+  const clearAllFilters = useCallback(() => {
+    setSelectedCategories([]);
+    setDateFilter(null);
+  }, []);
+
   return (
     <div className="flex flex-col">
       {/* Top bar: city + view toggle */}
@@ -138,14 +146,10 @@ export function DiscoveryView({
                   {filteredEvents.length} {t("eventsFound")}
                 </p>
                 {filteredEvents.length === 0 ? (
-                  <div className="bg-surface-low flex flex-col items-center justify-center rounded-[var(--radius-lg)] py-12">
-                    <p className="text-on-surface text-sm font-medium">
-                      {t("noEventsFound")}
-                    </p>
-                    <p className="text-on-surface-variant mt-1 text-xs">
-                      {t("noEventsFoundDesc")}
-                    </p>
-                  </div>
+                  <NoEventsEmptyState
+                    hasActiveFilters={hasActiveFilters}
+                    onClearFilters={clearAllFilters}
+                  />
                 ) : (
                   filteredEvents.map((event) => (
                     <EventCard
