@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { MOCK_EVENTS } from "@/lib/mock-events";
+import { MOCK_VENUES } from "@/lib/mock-venues";
 import type { CategorySlug } from "@/lib/categories";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
@@ -69,5 +70,32 @@ export const handlers = [
       );
     }
     return HttpResponse.json({ data: event });
+  }),
+
+  http.get(`${BASE_URL}/api/venues/:id`, ({ params }) => {
+    const venue = MOCK_VENUES.find((v) => v.id === params.id);
+    if (!venue) {
+      return HttpResponse.json(
+        {
+          statusCode: 404,
+          error: "NOT_FOUND",
+          message: "Venue not found",
+        },
+        { status: 404 },
+      );
+    }
+    return HttpResponse.json({ data: venue });
+  }),
+
+  http.get(`${BASE_URL}/api/venues/:id/events`, ({ params }) => {
+    const events = MOCK_EVENTS.filter((e) => e.venue.id === params.id);
+    return HttpResponse.json({
+      data: events,
+      meta: {
+        nextCursor: null,
+        hasMore: false,
+        total: events.length,
+      },
+    });
   }),
 ];

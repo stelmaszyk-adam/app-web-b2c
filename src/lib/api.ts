@@ -1,5 +1,7 @@
 import { MOCK_EVENTS } from "./mock-events";
+import { MOCK_VENUES } from "./mock-venues";
 import type { MockEvent } from "./types";
+import type { MockVenue } from "./mock-venues";
 import type { CategorySlug } from "./categories";
 
 interface FetchEventsParams {
@@ -46,4 +48,12 @@ export async function fetchEvents(
 
 export async function fetchEventById(id: string): Promise<MockEvent | null> {
   return MOCK_EVENTS.find((e) => e.id === id) ?? null;
+}
+
+export async function fetchVenueById(id: string): Promise<MockVenue | null> {
+  return MOCK_VENUES.find((v) => v.id === id) ?? null;
+}
+
+export async function fetchEventsByVenueId(venueId: string): Promise<MockEvent[]> {
+  return MOCK_EVENTS.filter((e) => e.venue.id === venueId);
 }
