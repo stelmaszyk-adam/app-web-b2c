@@ -20,9 +20,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const t = await getTranslations({ locale, namespace: "discovery" });
 
+  const canonicalPath = `/${citySlug}`;
+
   return {
     title: t("cityMetaTitle", { city: city.namePl }),
     description: t("cityMetaDescription", { city: city.namePl }),
+    alternates: {
+      canonical: canonicalPath,
+      languages: {
+        pl: canonicalPath,
+        en: `/en${canonicalPath}`,
+      },
+    },
   };
 }
 

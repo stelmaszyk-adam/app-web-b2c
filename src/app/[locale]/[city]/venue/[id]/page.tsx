@@ -5,17 +5,21 @@ import { getCityBySlug } from "@/lib/cities";
 import { fetchVenueById, fetchEventsByVenueId } from "@/lib/api";
 import { CATEGORY_MAP } from "@/lib/categories";
 import { VenueProfileContent } from "@/components/venue/venue-profile-content";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildPlaceJsonLd } from "@/lib/structured-data";
 
 type Props = {
   params: Promise<{ locale: string; city: string; id: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, id } = await params;
+  const { locale, city: citySlug, id } = await params;
   const venue = await fetchVenueById(id);
   if (!venue) return {};
 
   const t = await getTranslations({ locale, namespace: "venueProfile" });
+
+  const canonicalPath = `/${citySlug}/venue/${id}`;
 
   return {
     title: t("metaTitle", { name: venue.name }),
@@ -24,6 +28,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       address: venue.address,
       description: venue.description.slice(0, 120),
     }),
+    alternates: {
+      canonical: canonicalPath,
+      languages: {
+        pl: canonicalPath,
+        en: `/en${canonicalPath}`,
+      },
+    },
   };
 }
 
@@ -47,6 +58,7 @@ export default async function VenueProfilePage({ params }: Props) {
 
   return (
     <article className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 lg:px-8">
+      <JsonLd data={buildPlaceJsonLd(venue)} />
       {/* Breadcrumb */}
       <nav
         className="text-on-surface-variant mb-6 flex items-center gap-1.5 text-sm"

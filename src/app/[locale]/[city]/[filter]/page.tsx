@@ -78,6 +78,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const t = await getTranslations({ locale, namespace: "discovery" });
 
+  const canonicalPath = `/${citySlug}/${filter}`;
+
   if (isCategory(filter)) {
     const cat = CATEGORIES.find((c) => c.slug === filter);
     const catLabel = (locale === "pl" ? cat?.labelPl : cat?.labelEn) ?? filter;
@@ -87,6 +89,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         city: city.namePl,
         category: catLabel,
       }),
+      alternates: {
+        canonical: canonicalPath,
+        languages: {
+          pl: canonicalPath,
+          en: `/en${canonicalPath}`,
+        },
+      },
     };
   }
 
@@ -99,6 +108,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         city: city.namePl,
         filter: label,
       }),
+      alternates: {
+        canonical: canonicalPath,
+        languages: {
+          pl: canonicalPath,
+          en: `/en${canonicalPath}`,
+        },
+      },
     };
   }
 

@@ -5,13 +5,17 @@ import { getCityBySlug } from "@/lib/cities";
 import { fetchEventById } from "@/lib/api";
 import { CATEGORY_MAP } from "@/lib/categories";
 import { EventDetailContent } from "@/components/event/event-detail-content";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildEventJsonLd } from "@/lib/structured-data";
 
 type Props = {
   params: Promise<{ locale: string; city: string; id: string }>;
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://eventapp.dev";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, id } = await params;
+  const { locale, city: citySlug, id } = await params;
   const event = await fetchEventById(id);
   if (!event) return {};
 
@@ -24,9 +28,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: event.description.slice(0, 120),
   });
 
+  const canonicalPath = `/${citySlug}/event/${id}`;
+  const canonicalUrl = `${BASE_URL}${canonicalPath}`;
+  const ogImageUrl = `${BASE_URL}/api/og?title=${encodeURIComponent(event.title)}&date=${encodeURIComponent(event.date)}&venue=${encodeURIComponent(event.venue.name)}`;
+
   return {
     title: t("metaTitle", { title: event.title, venue: event.venue.name }),
     description,
+    alternates: {
+      canonical: canonicalPath,
+      languages: {
+        pl: canonicalPath,
+        en: `/en${canonicalPath}`,
+      },
+    },
+    openGraph: {
+      title: event.title,
+      description,
+      url: canonicalUrl,
+      type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: event.title,
+        },
+      ],
+    },
   };
 }
 
@@ -52,6 +81,7 @@ export default async function EventDetailPage({ params }: Props) {
 
   return (
     <article className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 lg:px-8">
+      <JsonLd data={buildEventJsonLd(event)} />
       {/* SSR-visible content for SEO — always in raw HTML */}
       <div className="mb-6">
         {/* Category badge */}
