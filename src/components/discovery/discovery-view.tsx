@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Map as MapIcon, List, MapPin, X, Locate } from "lucide-react";
+import { Map as MapIcon, List, MapPin, X, Locate, Sparkles, ChevronRight } from "lucide-react";
 import type { MockEvent } from "@/lib/types";
 import type { CategorySlug } from "@/lib/categories";
 import type { City } from "@/lib/cities";
@@ -157,6 +157,7 @@ export function DiscoveryView({
                     />
                   ))
                 )}
+                <ScoutCta />
               </div>
               <div className="sticky top-20 flex-1 overflow-hidden rounded-[var(--radius-lg)]">
                 <div className="relative h-full">
@@ -196,6 +197,7 @@ export function DiscoveryView({
                   ))}
                 </div>
               )}
+              <ScoutCta />
             </div>
           </>
         ) : (
@@ -219,6 +221,7 @@ export function DiscoveryView({
                 ))}
               </div>
             )}
+            <ScoutCta />
           </div>
         )}
       </div>
@@ -273,6 +276,31 @@ export function DiscoveryView({
           onClose={() => setShowDatePicker(false)}
         />
       )}
+    </div>
+  );
+}
+
+function ScoutCta() {
+  const t = useTranslations("discovery");
+
+  return (
+    <div className="mt-3 flex items-center gap-4 rounded-[var(--radius-xl)] border border-dashed border-outline p-5 bg-surface-high">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-tertiary-container text-tertiary">
+        <Sparkles className="h-5 w-5" strokeWidth={1.75} />
+      </div>
+      <div className="flex-1">
+        <p className="text-on-surface text-sm font-semibold">{t("scoutCtaTitle")}</p>
+        <p className="text-on-surface-variant mt-0.5 text-xs">{t("scoutCtaDesc")}</p>
+      </div>
+      <a
+        href="https://apps.apple.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex shrink-0 items-center gap-1 rounded-full border border-outline px-4 py-2 text-sm font-medium text-on-surface transition-colors hover:bg-surface-low"
+      >
+        {t("scoutCtaButton")}
+        <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
+      </a>
     </div>
   );
 }

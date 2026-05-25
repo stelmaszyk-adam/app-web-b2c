@@ -69,9 +69,19 @@ export default async function EventDetailPage({ params }: Props) {
 
         {/* Scout attribution */}
         {event.scoutUsername && (
-          <p className="text-on-surface-variant mt-2 text-sm">
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1.5 text-sm font-medium text-primary">
+            <svg
+              className="h-4 w-4 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
+            </svg>
             {t("tippedBy", { username: event.scoutUsername })}
-          </p>
+          </div>
         )}
       </div>
 

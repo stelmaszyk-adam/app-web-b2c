@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock, MapPin, Heart } from "lucide-react";
+import { Clock, MapPin, Heart, AtSign } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CATEGORY_MAP } from "@/lib/categories";
 import type { MockEvent } from "@/lib/types";
@@ -18,6 +19,7 @@ export function EventCard({
   onMouseEnter,
   onMouseLeave,
 }: EventCardProps) {
+  const t = useTranslations("discovery");
   const cat = CATEGORY_MAP[event.category];
 
   return (
@@ -94,6 +96,16 @@ export function EventCard({
             {event.venue.name} · {event.venue.address}
           </span>
         </div>
+
+        {/* Scout attribution */}
+        {event.scoutUsername && (
+          <div className="text-on-surface-variant mt-1 flex items-center gap-1 text-[11px]">
+            <AtSign className="h-3 w-3 shrink-0" strokeWidth={2} />
+            <span>
+              {t("tippedBy", { username: event.scoutUsername })}
+            </span>
+          </div>
+        )}
 
         {/* Price */}
         <div className="mt-1">
