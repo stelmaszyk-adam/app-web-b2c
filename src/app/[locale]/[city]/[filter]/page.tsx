@@ -154,8 +154,8 @@ export default async function CityFilterPage({ params }: Props) {
 
   return (
     <>
-      {/* SSR event data for SEO */}
-      <div className="sr-only" aria-hidden="true">
+      {/* SSR event data for SEO + screen readers */}
+      <div className="sr-only">
         <h1>
           {filterLabel} — Wydarzenia w {city.namePl} — {events.length} wydarzeń
         </h1>

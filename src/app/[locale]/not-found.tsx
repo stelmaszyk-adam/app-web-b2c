@@ -70,6 +70,7 @@ export default function NotFound() {
         <input
           type="text"
           placeholder={t("searchPlaceholder")}
+          aria-label={t("searchPlaceholder")}
           className="text-on-surface placeholder:text-on-surface-muted min-w-0 flex-1 border-0 bg-transparent text-sm outline-none"
           onKeyDown={(e) => {
             if (e.key === "Enter" && e.currentTarget.value.trim()) {

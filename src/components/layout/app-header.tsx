@@ -28,7 +28,7 @@ export function AppHeader() {
   }
 
   return (
-    <header className="bg-surface-high/90 sticky top-0 z-30 border-b border-outline backdrop-blur-[20px]">
+    <header className="bg-surface-high/90 sticky top-0 z-30 border-b border-outline backdrop-blur-[20px]" role="banner">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-6 md:h-16 max-md:h-14 max-md:gap-2 max-md:px-3">
         {/* Logo */}
         <Link
@@ -64,6 +64,7 @@ export function AppHeader() {
           <input
             type="text"
             placeholder={t("searchPlaceholder")}
+            aria-label={t("searchPlaceholder")}
             className="text-on-surface placeholder:text-on-surface-muted min-w-0 flex-1 border-0 bg-transparent text-sm outline-none"
           />
         </div>
@@ -82,9 +83,10 @@ export function AppHeader() {
         </a>
 
         {/* Language Toggle — desktop */}
-        <div className="bg-surface-low inline-flex h-8 items-center rounded-full p-[3px] max-md:hidden">
+        <div className="bg-surface-low inline-flex h-8 items-center rounded-full p-[3px] max-md:hidden" role="group" aria-label={t("languageToggle")}>
           <button
             onClick={() => switchLocale("pl")}
+            aria-pressed={locale === "pl"}
             className={`h-full rounded-full px-2.5 text-xs font-semibold transition-colors ${
               locale === "pl"
                 ? "bg-surface-high text-on-surface shadow-sm"
@@ -95,6 +97,7 @@ export function AppHeader() {
           </button>
           <button
             onClick={() => switchLocale("en")}
+            aria-pressed={locale === "en"}
             className={`h-full rounded-full px-2.5 text-xs font-semibold transition-colors ${
               locale === "en"
                 ? "bg-surface-high text-on-surface shadow-sm"
@@ -131,6 +134,7 @@ export function AppHeader() {
             <input
               type="text"
               placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
               className="text-on-surface placeholder:text-on-surface-muted min-w-0 flex-1 border-0 bg-transparent text-sm outline-none"
             />
           </div>
@@ -147,12 +151,13 @@ export function AppHeader() {
           </a>
 
           {/* Language Toggle — mobile */}
-          <div className="bg-surface-low mt-3 inline-flex h-8 items-center rounded-full p-[3px]">
+          <div className="bg-surface-low mt-3 inline-flex h-8 items-center rounded-full p-[3px]" role="group" aria-label={t("languageToggle")}>
             <button
               onClick={() => {
                 switchLocale("pl");
                 setMobileMenuOpen(false);
               }}
+              aria-pressed={locale === "pl"}
               className={`h-full rounded-full px-2.5 text-xs font-semibold transition-colors ${
                 locale === "pl"
                   ? "bg-surface-high text-on-surface shadow-sm"
@@ -166,6 +171,7 @@ export function AppHeader() {
                 switchLocale("en");
                 setMobileMenuOpen(false);
               }}
+              aria-pressed={locale === "en"}
               className={`h-full rounded-full px-2.5 text-xs font-semibold transition-colors ${
                 locale === "en"
                   ? "bg-surface-high text-on-surface shadow-sm"

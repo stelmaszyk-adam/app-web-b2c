@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Map as MapIcon, List, MapPin, X, Locate, Sparkles, ChevronRight } from "lucide-react";
 import type { MockEvent } from "@/lib/types";
@@ -45,6 +45,8 @@ export function DiscoveryView({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showMobileMap, setShowMobileMap] = useState(false);
   const [happeningNow, setHappeningNow] = useState(false);
+  const [liveAnnouncement, setLiveAnnouncement] = useState("");
+  const prevCountRef = useRef<number | null>(null);
 
   const filteredEvents = useMemo(() => {
     let result = events;
@@ -79,6 +81,16 @@ export function DiscoveryView({
     [],
   );
 
+  // Announce result count changes to screen readers
+  useEffect(() => {
+    if (prevCountRef.current !== null && prevCountRef.current !== filteredEvents.length) {
+      setLiveAnnouncement(
+        `${filteredEvents.length} ${t("eventsFound")}`,
+      );
+    }
+    prevCountRef.current = filteredEvents.length;
+  }, [filteredEvents.length, t]);
+
   const hasActiveFilters = selectedCategories.length > 0 || dateFilter !== null;
 
   const clearAllFilters = useCallback(() => {
@@ -88,6 +100,11 @@ export function DiscoveryView({
 
   return (
     <div className="flex flex-col">
+      {/* Screen reader announcements for result count changes */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {liveAnnouncement}
+      </div>
+
       {/* Top bar: city + view toggle */}
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-6 py-3 max-md:px-3">
         <button
@@ -107,6 +124,7 @@ export function DiscoveryView({
                 : "bg-surface-low text-on-surface-variant hover:bg-surface-mid"
             }`}
             aria-label={t("mapView")}
+            aria-pressed={viewMode === "split"}
           >
             <MapIcon className="h-4 w-4" strokeWidth={1.75} />
           </button>
@@ -118,6 +136,7 @@ export function DiscoveryView({
                 : "bg-surface-low text-on-surface-variant hover:bg-surface-mid"
             }`}
             aria-label={t("listView")}
+            aria-pressed={viewMode === "list"}
           >
             <List className="h-4 w-4" strokeWidth={1.75} />
           </button>
@@ -138,6 +157,7 @@ export function DiscoveryView({
 
       {/* Content */}
       <div className="mx-auto w-full max-w-[1440px] px-6 py-4 max-md:px-3">
+        <h2 className="sr-only">{t("eventsListHeading")}</h2>
         {viewMode === "split" ? (
           <>
             {/* Desktop split view */}
@@ -254,6 +274,7 @@ export function DiscoveryView({
               <button
                 onClick={() => setShowMobileMap(false)}
                 className="bg-surface-low flex h-9 w-9 items-center justify-center rounded-full"
+                aria-label={t("closeMap")}
               >
                 <X className="h-5 w-5" strokeWidth={1.75} />
               </button>

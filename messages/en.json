@@ -14,10 +14,13 @@
     "searchPlaceholder": "Search events, venues, artists…",
     "forOrganizers": "For Organizers",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "languageToggle": "Select language"
   },
   "discovery": {
     "happeningNow": "Happening now",
+    "filterCategories": "Filter categories",
+    "eventsListHeading": "Events list",
     "dateFilter": "Date",
     "mapView": "Map view",
     "listView": "List view",
@@ -34,6 +37,7 @@
     "cityNotAvailableDesc": "Let us know you want to see events in your city.",
     "reportCity": "Report {city}",
     "close": "Close",
+    "closeMap": "Close map",
     "useMyLocation": "Use my location",
     "locating": "Locating…",
     "locationUnavailable": "Location unavailable — select your city",

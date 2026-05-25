@@ -56,9 +56,12 @@ export default async function LocaleLayout({ children, params }: Props) {
           <PostHogProvider />
           <WebVitalsReporter />
           <ErrorToastProvider>
+            <a href="#main-content" className="skip-to-content">
+              {locale === "pl" ? "Przejdź do treści" : "Skip to content"}
+            </a>
             <OfflineBanner />
             <AppHeader />
-            <main className="flex-1">{children}</main>
+            <main id="main-content" className="flex-1">{children}</main>
             <AppFooter />
             <CityPickerOverlay />
           </ErrorToastProvider>

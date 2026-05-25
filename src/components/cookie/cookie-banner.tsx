@@ -28,9 +28,9 @@ export function CookieBanner({
           <Cookie className="h-6 w-6" strokeWidth={1.75} />
         </div>
         <div className="flex-1">
-          <h3 className="text-on-surface text-base font-semibold">
+          <p className="text-on-surface text-base font-semibold">
             {t("bannerTitle")}
-          </h3>
+          </p>
           <p className="text-on-surface-variant mt-1 text-sm leading-relaxed">
             {t("bannerDescription")}
           </p>

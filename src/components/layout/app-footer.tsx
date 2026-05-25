@@ -48,9 +48,9 @@ export function AppFooter() {
 
         {/* Discover */}
         <div>
-          <h4 className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
+          <p className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
             {t("discover")}
-          </h4>
+          </p>
           <ul className="flex flex-col gap-2.5">
             {CITIES.map((city) => (
               <li key={city}>
@@ -75,9 +75,9 @@ export function AppFooter() {
 
         {/* Categories */}
         <div>
-          <h4 className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
+          <p className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
             {t("categories")}
-          </h4>
+          </p>
           <ul className="flex flex-col gap-2.5">
             {(["music", "clubs", "theatre", "art", "sport"] as const).map(
               (cat) => (
@@ -96,9 +96,9 @@ export function AppFooter() {
 
         {/* For Business */}
         <div>
-          <h4 className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
+          <p className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
             {t("forBusiness")}
-          </h4>
+          </p>
           <ul className="flex flex-col gap-2.5">
             <li>
               <a
@@ -137,9 +137,9 @@ export function AppFooter() {
 
         {/* Legal */}
         <div>
-          <h4 className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
+          <p className="text-on-surface-variant mb-4 text-xs font-medium uppercase tracking-[0.05em]">
             {t("legal")}
-          </h4>
+          </p>
           <ul className="flex flex-col gap-2.5">
             <li>
               <a

@@ -14,10 +14,13 @@
     "searchPlaceholder": "Szukaj wydarzeń, miejsc, artystów…",
     "forOrganizers": "Dla Organizatorów",
     "openMenu": "Otwórz menu",
-    "closeMenu": "Zamknij menu"
+    "closeMenu": "Zamknij menu",
+    "languageToggle": "Wybierz język"
   },
   "discovery": {
     "happeningNow": "Dzieje się teraz",
+    "filterCategories": "Filtruj kategorie",
+    "eventsListHeading": "Lista wydarzeń",
     "dateFilter": "Data",
     "mapView": "Widok mapy",
     "listView": "Widok listy",
@@ -34,6 +37,7 @@
     "cityNotAvailableDesc": "Daj nam znać, że chcesz oglądać wydarzenia w swoim mieście.",
     "reportCity": "Zgłoś {city}",
     "close": "Zamknij",
+    "closeMap": "Zamknij mapę",
     "useMyLocation": "Użyj mojej lokalizacji",
     "locating": "Lokalizowanie…",
     "locationUnavailable": "Lokalizacja niedostępna — wybierz miasto",

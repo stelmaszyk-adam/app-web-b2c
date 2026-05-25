@@ -5,6 +5,7 @@ import { WifiOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function OfflineBanner() {
+  const isMocking = process.env.NEXT_PUBLIC_API_MOCKING === "true";
   const [isOffline, setIsOffline] = useState(() =>
     typeof navigator !== "undefined" ? !navigator.onLine : false,
   );
@@ -28,7 +29,7 @@ export function OfflineBanner() {
     };
   }, []);
 
-  if (!isOffline) return null;
+  if (!isOffline || isMocking) return null;
 
   return (
     <div

@@ -24,12 +24,13 @@ export function FilterBar({
   const t = useTranslations("discovery");
 
   return (
-    <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-1">
+    <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-1" role="toolbar" aria-label={t("filterCategories")}>
       {/* Happening Now toggle */}
       {onToggleHappeningNow && (
         <>
           <button
             onClick={onToggleHappeningNow}
+            aria-pressed={happeningNow}
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
               happeningNow
                 ? "bg-live-red text-white"
@@ -51,6 +52,7 @@ export function FilterBar({
           <button
             key={cat.slug}
             onClick={() => onToggleCategory(cat.slug)}
+            aria-pressed={isSelected}
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
               isSelected
                 ? "text-white"

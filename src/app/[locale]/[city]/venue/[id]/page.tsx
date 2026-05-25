@@ -395,7 +395,7 @@ function VenueOpenStatus({
   if (!today || today.isClosed) {
     return (
       <div className="flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-on-surface-muted" />
+        <span className="h-2 w-2 rounded-full bg-on-surface-muted" aria-hidden="true" />
         <strong className="text-on-surface-variant text-sm">{t("closed")}</strong>
       </div>
     );
@@ -403,7 +403,7 @@ function VenueOpenStatus({
   const closingTime = today.hours.split(" - ")[1]?.trim();
   return (
     <div className="flex items-center gap-2">
-      <span className="h-2 w-2 rounded-full bg-success" />
+      <span className="h-2 w-2 rounded-full bg-success" aria-hidden="true" />
       <strong className="text-sm text-success">{t("open")}</strong>
       {closingTime && (
         <span className="text-on-surface-variant text-sm">
