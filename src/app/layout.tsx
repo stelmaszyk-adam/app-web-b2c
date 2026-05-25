@@ -1,5 +1,13 @@
+import type { Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#4900cc" },
+    { media: "(prefers-color-scheme: dark)", color: "#4900cc" },
+  ],
+};
 
 const inter = Inter({
   variable: "--font-inter",
