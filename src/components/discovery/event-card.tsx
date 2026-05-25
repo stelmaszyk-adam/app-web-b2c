@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CATEGORY_MAP } from "@/lib/categories";
 import type { MockEvent } from "@/lib/types";
+import { EventImage } from "@/components/ui/event-image";
 
 interface EventCardProps {
   event: MockEvent;
@@ -37,7 +38,14 @@ export function EventCard({
       onMouseLeave={onMouseLeave}
     >
       {/* Thumbnail */}
-      <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-[var(--radius-md)] bg-gradient-to-br from-primary/20 to-secondary/20">
+      <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-[var(--radius-md)]">
+        <EventImage
+          src={event.imageUrl}
+          alt={event.title}
+          category={event.category}
+          fill
+          sizes="112px"
+        />
         {/* Badges */}
         <div className="absolute left-1.5 top-1.5 flex flex-col gap-1">
           {event.badges.includes("live") && (

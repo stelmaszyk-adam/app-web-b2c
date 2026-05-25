@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { MockEvent } from "@/lib/types";
-import { CATEGORY_MAP } from "@/lib/categories";
+import { EventImage } from "@/components/ui/event-image";
 
 interface EventDetailContentProps {
   event: MockEvent;
@@ -23,6 +23,7 @@ export function EventDetailContent({ event, citySlug, locale }: EventDetailConte
       <PhotoGallery
         photos={photos}
         alt={event.title}
+        category={event.category}
         selectedIndex={selectedPhoto}
         onSelect={setSelectedPhoto}
       />
@@ -43,78 +44,59 @@ function getPhotoList(event: MockEvent): string[] {
   if (event.imageUrl) {
     return [event.imageUrl];
   }
-  const cat = CATEGORY_MAP[event.category];
-  const hue = cat?.color ?? "#6b7280";
-  return [`placeholder:${hue}`];
+  return [];
 }
 
 function PhotoGallery({
   photos,
   alt,
+  category,
   selectedIndex,
   onSelect,
 }: {
   photos: string[];
   alt: string;
+  category: MockEvent["category"];
   selectedIndex: number;
   onSelect: (i: number) => void;
 }) {
-  const current = photos[selectedIndex] ?? photos[0];
-  const isPlaceholder = current?.startsWith("placeholder:");
+  const current = photos[selectedIndex] ?? null;
 
   return (
     <div>
       {/* Main image */}
       <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-xl)]">
-        {isPlaceholder ? (
-          <div
-            className="flex h-full w-full items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${current.split(":")[1]}33, ${current.split(":")[1]}66)` }}
-          >
-            <svg className="h-16 w-16 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21 15 16 10 5 21" />
-            </svg>
-          </div>
-        ) : (
-          <div
-            className="h-full w-full bg-cover bg-center bg-surface-mid"
-            style={{ backgroundImage: `url(${current})` }}
-            role="img"
-            aria-label={alt}
-          />
-        )}
+        <EventImage
+          src={current}
+          alt={alt}
+          category={category}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+          priority
+        />
       </div>
 
       {/* Thumbnails */}
       {photos.length > 1 && (
         <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide">
-          {photos.map((photo, i) => {
-            const isThumbPlaceholder = photo.startsWith("placeholder:");
-            return (
-              <button
-                key={i}
-                onClick={() => onSelect(i)}
-                className={`h-16 w-16 shrink-0 overflow-hidden rounded-[var(--radius-md)] transition-all ${
-                  i === selectedIndex ? "ring-2 ring-primary" : "opacity-70 hover:opacity-100"
-                }`}
-                aria-label={`Photo ${i + 1}`}
-              >
-                {isThumbPlaceholder ? (
-                  <div
-                    className="h-full w-full"
-                    style={{ background: `linear-gradient(135deg, ${photo.split(":")[1]}33, ${photo.split(":")[1]}66)` }}
-                  />
-                ) : (
-                  <div
-                    className="h-full w-full bg-cover bg-center bg-surface-mid"
-                    style={{ backgroundImage: `url(${photo})` }}
-                  />
-                )}
-              </button>
-            );
-          })}
+          {photos.map((photo, i) => (
+            <button
+              key={i}
+              onClick={() => onSelect(i)}
+              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-[var(--radius-md)] transition-all ${
+                i === selectedIndex ? "ring-2 ring-primary" : "opacity-70 hover:opacity-100"
+              }`}
+              aria-label={`Photo ${i + 1}`}
+            >
+              <EventImage
+                src={photo}
+                alt=""
+                category={category}
+                fill
+                sizes="64px"
+              />
+            </button>
+          ))}
         </div>
       )}
     </div>

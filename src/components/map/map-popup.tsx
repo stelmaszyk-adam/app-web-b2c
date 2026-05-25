@@ -4,6 +4,7 @@ import { X, Clock, MapPin } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CATEGORY_MAP } from "@/lib/categories";
 import type { MockEvent } from "@/lib/types";
+import { EventImage } from "@/components/ui/event-image";
 
 interface MapPopupProps {
   event: MockEvent;
@@ -19,7 +20,14 @@ export function MapPopup({ event, onClose, inline }: MapPopupProps) {
       className={`bg-surface-high overflow-hidden rounded-[var(--radius-lg)] shadow-lg ${inline ? "" : "absolute bottom-4 left-4 right-4 z-20 max-w-sm"}`}
     >
       {/* Image */}
-      <div className="relative h-32 w-full bg-gradient-to-br from-primary/20 to-secondary/20">
+      <div className="relative h-32 w-full">
+        <EventImage
+          src={event.imageUrl || null}
+          alt={event.title}
+          category={event.category}
+          fill
+          sizes="(max-width: 640px) 100vw, 384px"
+        />
         {/* Category badge */}
         <span
           className="absolute left-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white"

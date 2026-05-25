@@ -5,9 +5,11 @@ import { getCityBySlug } from "@/lib/cities";
 import { fetchVenueById, fetchEventsByVenueId } from "@/lib/api";
 import { CATEGORY_MAP } from "@/lib/categories";
 import { VenueProfileContent } from "@/components/venue/venue-profile-content";
+import { VenueHeroImage } from "@/components/venue/venue-hero-image";
 import { NoVenueEventsEmptyState } from "@/components/ui/empty-state";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildPlaceJsonLd } from "@/lib/structured-data";
+import { EventImage } from "@/components/ui/event-image";
 
 type Props = {
   params: Promise<{ locale: string; city: string; id: string }>;
@@ -55,7 +57,7 @@ export default async function VenueProfilePage({ params }: Props) {
   // JS getDay(): 0=Sunday..6=Saturday → map to our array index (0=Monday..6=Sunday)
   const todayMondayIndex = todayIndex === 0 ? 6 : todayIndex - 1;
 
-  const photos = getPhotoList(venue.venuePhotos, venue.photoUrl, cat?.color);
+  const photos = getPhotoList(venue.venuePhotos, venue.photoUrl);
 
   return (
     <article className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 lg:px-8">
@@ -75,52 +77,18 @@ export default async function VenueProfilePage({ params }: Props) {
       </nav>
 
       {/* Hero image */}
-      <div className="relative aspect-[21/9] w-full overflow-hidden rounded-[var(--radius-xl)]">
-        {photos[0].startsWith("placeholder:") ? (
-          <div
-            className="flex h-full w-full items-center justify-center"
-            style={{
-              background: `linear-gradient(135deg, ${photos[0].split(":")[1]}33, ${photos[0].split(":")[1]}66)`,
-            }}
-          >
-            <svg
-              className="h-16 w-16 opacity-40"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1}
-            >
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21 15 16 10 5 21" />
-            </svg>
-          </div>
-        ) : (
-          <div
-            className="bg-surface-mid h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${photos[0]})` }}
-            role="img"
-            aria-label={venue.name}
-          />
-        )}
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent" />
-        <div className="absolute left-4 top-4 flex items-center gap-2">
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.95)",
-              color: cat?.color ?? "#6b7280",
-            }}
-          >
-            {cat?.icon && <cat.icon className="h-3.5 w-3.5" strokeWidth={1.75} />}
-            {venue.categoryLabel}
-          </span>
-        </div>
-      </div>
+      <VenueHeroImage
+        photos={photos}
+        venueName={venue.name}
+        category={venue.category}
+        categoryLabel={venue.categoryLabel}
+        categoryColor={cat?.color}
+        CategoryIcon={cat?.icon}
+      />
 
       {/* Photo thumbnails */}
       {photos.length > 1 && (
-        <VenueProfileContent photos={photos} venueName={venue.name} />
+        <VenueProfileContent photos={photos} venueName={venue.name} category={venue.category} />
       )}
 
       <div className="mt-6 flex flex-col gap-8 lg:flex-row">
@@ -268,23 +236,21 @@ export default async function VenueProfilePage({ params }: Props) {
             ) : (
               <div className="flex flex-col gap-3">
                 {upcomingEvents.map((ev) => {
-                  const evCat = CATEGORY_MAP[ev.category];
                   return (
                     <a
                       key={ev.id}
                       href={`/${locale === "pl" ? "" : locale + "/"}${citySlug}/event/${ev.id}`}
                       className="bg-surface-low hover:bg-surface-mid flex items-center gap-4 rounded-[var(--radius-lg)] p-3 transition-colors"
                     >
-                      <div
-                        className="bg-surface-mid h-16 w-16 shrink-0 rounded-[var(--radius-md)] bg-cover bg-center"
-                        style={{
-                          backgroundImage: ev.imageUrl
-                            ? `url(${ev.imageUrl})`
-                            : `linear-gradient(135deg, ${evCat?.color ?? "#6b7280"}33, ${evCat?.color ?? "#6b7280"}66)`,
-                        }}
-                        role="img"
-                        aria-label={ev.title}
-                      />
+                      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[var(--radius-md)]">
+                        <EventImage
+                          src={ev.imageUrl || null}
+                          alt={ev.title}
+                          category={ev.category}
+                          fill
+                          sizes="64px"
+                        />
+                      </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-on-surface-variant text-xs font-medium uppercase tracking-wider">
                           {ev.date} · {ev.time}
@@ -443,11 +409,10 @@ function VenueOpenStatus({
 function getPhotoList(
   venuePhotos: string[],
   photoUrl: string | null,
-  fallbackColor?: string,
 ): string[] {
   if (venuePhotos.length > 0) return venuePhotos;
   if (photoUrl) return [photoUrl];
-  return [`placeholder:${fallbackColor ?? "#6b7280"}`];
+  return [];
 }
 
 function extractDay(dateStr: string): string {
