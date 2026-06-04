@@ -174,7 +174,7 @@ export default async function EventDetailPage({ params }: Props) {
         {/* Right sidebar */}
         <aside className="w-full shrink-0 space-y-4 lg:w-80">
           {/* Price & CTA card */}
-          <div className="bg-surface-high rounded-[var(--radius-xl)] p-6">
+          <div className="bg-surface-high rounded-xl p-6">
             <p className="text-on-surface mb-4 text-2xl font-bold">
               {event.price == null || event.price === 0
                 ? t("free")
