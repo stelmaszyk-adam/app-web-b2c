@@ -1,4 +1,30 @@
-import type { MockEvent } from "./types";
+import type { CategorySlug } from "./categories";
+
+interface MockEvent {
+  id: string;
+  title: string;
+  category: CategorySlug;
+  venue: { id: string; name: string; address: string };
+  imageUrl: string;
+  date: string;
+  time: string;
+  startDate: string;
+  endDate?: string;
+  priceFrom: number;
+  lat: number;
+  lng: number;
+  description: string;
+  badges: string[];
+  city: string;
+  eventPhotos?: string[];
+  ticketUrl?: string;
+  source?: string;
+  scoutUsername?: string;
+  recurrence?: {
+    type: "daily" | "weekly" | "monthly";
+    instances: { id: string; date: string; time: string; startDate: string }[];
+  };
+}
 
 export const MOCK_EVENTS: MockEvent[] = [
   {

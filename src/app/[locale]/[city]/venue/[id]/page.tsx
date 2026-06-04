@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { getCityBySlug } from "@/lib/cities";
 import { fetchVenueById, fetchEventsByVenueId } from "@/lib/api";
 import { CATEGORY_MAP } from "@/lib/categories";
+import type { VenueOpeningHour, VenueUpcomingEvent } from "@/lib/types";
+import { formatEventDate, formatEventTime } from "@/lib/types";
 import { VenueProfileContent } from "@/components/venue/venue-profile-content";
 import { VenueHeroImage } from "@/components/venue/venue-hero-image";
 import { NoVenueEventsEmptyState } from "@/components/ui/empty-state";
@@ -19,6 +21,32 @@ import {
 type Props = {
   params: Promise<{ locale: string; city: string; id: string }>;
 };
+
+const DAY_NAMES_PL = ["Poniedzialek", "Wtorek", "Sroda", "Czwartek", "Piatek", "Sobota", "Niedziela"];
+const DAY_NAMES_EN = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+function formatOpeningHours(hours: VenueOpeningHour[]) {
+  // Backend returns day_of_week 1-7 (Mon=1..Sun=7)
+  // Fill all 7 days, marking missing ones as closed
+  const byDay = new Map(hours.map((h) => [h.dayOfWeek, h]));
+  return Array.from({ length: 7 }, (_, i) => {
+    const dayNum = i + 1;
+    const h = byDay.get(dayNum);
+    return {
+      dayPl: DAY_NAMES_PL[i],
+      dayEn: DAY_NAMES_EN[i],
+      hours: h ? `${h.openTime} - ${h.closeTime}` : "zamkniete",
+      isClosed: !h,
+      isOpenUntilLate: h ? isLateClose(h.closeTime) : false,
+      isFlexibleClose: h?.isFlexibleClose ?? false,
+    };
+  });
+}
+
+function isLateClose(closeTime: string): boolean {
+  const hour = parseInt(closeTime.split(":")[0], 10);
+  return hour <= 6 || hour >= 23;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, city: citySlug, id } = await params;
@@ -59,15 +87,19 @@ export default async function VenueProfilePage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: "venueProfile" });
 
   const todayIndex = new Date().getDay();
-  // JS getDay(): 0=Sunday..6=Saturday → map to our array index (0=Monday..6=Sunday)
+  // JS getDay(): 0=Sunday..6=Saturday -> map to our array index (0=Monday..6=Sunday)
   const todayMondayIndex = todayIndex === 0 ? 6 : todayIndex - 1;
 
-  const photos = getPhotoList(venue.venuePhotos, venue.photoUrl);
+  const venuePhotoUrls = venue.photos.map((p) => p.url);
+  const photos = getPhotoList(venuePhotoUrls, venue.photoUrl);
+  const openingHours = formatOpeningHours(venue.openingHours);
+
+  const catLabel = (locale === "pl" ? cat?.labelPl : cat?.labelEn) ?? venue.category;
 
   return (
     <article className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 lg:px-8">
       <TrackVenueProfileView venueId={venue.id} venueName={venue.name} />
-      <JsonLd data={buildPlaceJsonLd(venue)} />
+      <JsonLd data={buildPlaceJsonLd(venue, citySlug)} />
       {/* Breadcrumb */}
       <nav
         className="text-on-surface-variant mb-6 flex items-center gap-1.5 text-sm"
@@ -87,7 +119,7 @@ export default async function VenueProfilePage({ params }: Props) {
         photos={photos}
         venueName={venue.name}
         category={venue.category}
-        categoryLabel={venue.categoryLabel}
+        categoryLabel={catLabel}
         categoryColor={cat?.color}
         CategoryIcon={cat?.icon}
       />
@@ -135,7 +167,7 @@ export default async function VenueProfilePage({ params }: Props) {
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
-              <strong className="text-on-surface">{venue.followers.toLocaleString("pl-PL")}</strong>
+              <strong className="text-on-surface">{venue.followerCount.toLocaleString("pl-PL")}</strong>
               <span className="text-on-surface-variant text-sm">{t("followers")}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -154,7 +186,7 @@ export default async function VenueProfilePage({ params }: Props) {
               <strong className="text-on-surface">{upcomingEvents.length}</strong>
               <span className="text-on-surface-variant text-sm">{t("upcomingEvents")}</span>
             </div>
-            <VenueOpenStatus hours={venue.openingHours} todayIndex={todayMondayIndex} t={t} />
+            <VenueOpenStatus hours={openingHours} todayIndex={todayMondayIndex} t={t} />
           </div>
 
           {/* About */}
@@ -163,7 +195,7 @@ export default async function VenueProfilePage({ params }: Props) {
             <p className="text-on-surface-variant whitespace-pre-line text-base leading-relaxed">
               {venue.description}
             </p>
-            {/* Claim CTA placeholder (task 1-01) */}
+            {/* Claim CTA placeholder */}
             <div className="bg-surface-low mt-4 flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-3">
               <svg
                 className="h-5 w-5 shrink-0 text-primary"
@@ -197,11 +229,11 @@ export default async function VenueProfilePage({ params }: Props) {
           <section className="mt-8">
             <h2 className="text-on-surface mb-3 text-xl font-semibold">{t("openingHours")}</h2>
             <div className="overflow-hidden rounded-[var(--radius-lg)]">
-              {venue.openingHours.map((entry, i) => {
+              {openingHours.map((entry, i) => {
                 const isToday = i === todayMondayIndex;
                 return (
                   <div
-                    key={entry.day}
+                    key={entry.dayPl}
                     className={`flex items-center justify-between px-4 py-2.5 ${
                       isToday
                         ? "bg-primary-container font-semibold text-on-surface"
@@ -221,12 +253,6 @@ export default async function VenueProfilePage({ params }: Props) {
                       {entry.isOpenUntilLate && !entry.isClosed && (
                         <span className="text-on-surface-variant ml-1 text-xs">({t("openUntilLate")})</span>
                       )}
-                      {entry.isHoliday && (
-                        <span className="ml-1 text-xs text-warning">({t("holiday")})</span>
-                      )}
-                      {entry.isTemporaryClosure && (
-                        <span className="ml-1 text-xs text-warning">({t("temporaryClosure")})</span>
-                      )}
                     </span>
                   </div>
                 );
@@ -242,6 +268,8 @@ export default async function VenueProfilePage({ params }: Props) {
             ) : (
               <div className="flex flex-col gap-3">
                 {upcomingEvents.map((ev) => {
+                  const dateStr = formatEventDate(ev.startTime, locale);
+                  const timeStr = formatEventTime(ev.startTime);
                   return (
                     <a
                       key={ev.id}
@@ -250,8 +278,8 @@ export default async function VenueProfilePage({ params }: Props) {
                     >
                       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[var(--radius-md)]">
                         <EventImage
-                          src={ev.imageUrl || null}
-                          alt={ev.title}
+                          src={ev.photoUrl}
+                          alt={ev.name}
                           category={ev.category}
                           fill
                           sizes="64px"
@@ -259,20 +287,13 @@ export default async function VenueProfilePage({ params }: Props) {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-on-surface-variant text-xs font-medium uppercase tracking-wider">
-                          {ev.date} · {ev.time}
+                          {dateStr} · {timeStr}
                         </p>
                         <h3 className="text-on-surface mt-1 truncate text-base font-semibold">
-                          {ev.title}
+                          {ev.name}
                         </h3>
                       </div>
-                      <div className="bg-surface-high flex shrink-0 flex-col items-center rounded-[var(--radius-md)] px-3 py-1.5">
-                        <span className="text-on-surface text-lg font-bold leading-tight">
-                          {extractDay(ev.date)}
-                        </span>
-                        <span className="text-on-surface-variant text-xs font-medium uppercase">
-                          {extractMonth(ev.date)}
-                        </span>
-                      </div>
+                      <DateBadge isoString={ev.startTime} />
                     </a>
                   );
                 })}
@@ -387,7 +408,7 @@ function VenueOpenStatus({
   todayIndex,
   t,
 }: {
-  hours: { hours: string; isClosed?: boolean; isOpenUntilLate?: boolean }[];
+  hours: { hours: string; isClosed: boolean }[];
   todayIndex: number;
   t: (key: string) => string;
 }) {
@@ -414,6 +435,18 @@ function VenueOpenStatus({
   );
 }
 
+function DateBadge({ isoString }: { isoString: string }) {
+  const date = new Date(isoString);
+  const day = date.getDate().toString();
+  const month = date.toLocaleDateString("pl-PL", { month: "short" });
+  return (
+    <div className="bg-surface-high flex shrink-0 flex-col items-center rounded-[var(--radius-md)] px-3 py-1.5">
+      <span className="text-on-surface text-lg font-bold leading-tight">{day}</span>
+      <span className="text-on-surface-variant text-xs font-medium uppercase">{month}</span>
+    </div>
+  );
+}
+
 function getPhotoList(
   venuePhotos: string[],
   photoUrl: string | null,
@@ -421,14 +454,4 @@ function getPhotoList(
   if (venuePhotos.length > 0) return venuePhotos;
   if (photoUrl) return [photoUrl];
   return [];
-}
-
-function extractDay(dateStr: string): string {
-  const match = dateStr.match(/(\d{1,2})\s/);
-  return match?.[1] ?? "";
-}
-
-function extractMonth(dateStr: string): string {
-  const match = dateStr.match(/\d{1,2}\s(\w+)/);
-  return match?.[1]?.slice(0, 3) ?? "";
 }

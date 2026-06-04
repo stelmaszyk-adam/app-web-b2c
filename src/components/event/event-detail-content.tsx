@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import type { MockEvent } from "@/lib/types";
+import type { Event } from "@/lib/types";
 import { EventImage } from "@/components/ui/event-image";
 import { trackEventShare } from "@/lib/analytics";
 
 interface EventDetailContentProps {
-  event: MockEvent;
+  event: Event;
   citySlug: string;
   locale: string;
 }
@@ -23,7 +23,7 @@ export function EventDetailContent({ event, citySlug, locale }: EventDetailConte
       {/* Photo gallery */}
       <PhotoGallery
         photos={photos}
-        alt={event.title}
+        alt={event.name}
         category={event.category}
         selectedIndex={selectedPhoto}
         onSelect={setSelectedPhoto}
@@ -38,12 +38,12 @@ export function EventDetailContent({ event, citySlug, locale }: EventDetailConte
   );
 }
 
-function getPhotoList(event: MockEvent): string[] {
-  if (event.eventPhotos && event.eventPhotos.length > 0) {
-    return event.eventPhotos;
+function getPhotoList(event: Event): string[] {
+  if (event.photos && event.photos.length > 0) {
+    return event.photos.map((p) => p.url);
   }
-  if (event.imageUrl) {
-    return [event.imageUrl];
+  if (event.photoUrl) {
+    return [event.photoUrl];
   }
   return [];
 }
@@ -57,7 +57,7 @@ function PhotoGallery({
 }: {
   photos: string[];
   alt: string;
-  category: MockEvent["category"];
+  category: Event["category"];
   selectedIndex: number;
   onSelect: (i: number) => void;
 }) {
@@ -160,22 +160,22 @@ function ShareButton({
   );
 }
 
-function AddToCalendarDropdown({ event }: { event: MockEvent }) {
+function AddToCalendarDropdown({ event }: { event: Event }) {
   const t = useTranslations("eventDetail");
   const [open, setOpen] = useState(false);
 
-  const startDate = new Date(event.startDate);
-  const endDate = event.endDate ? new Date(event.endDate) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+  const startDate = new Date(event.startTime);
+  const endDate = event.endTime ? new Date(event.endTime) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
 
-  const googleCalendarUrl = buildGoogleCalendarUrl(event.title, startDate, endDate, event.venue.name, event.venue.address, event.description);
-  const icsContent = buildIcsContent(event.title, startDate, endDate, event.venue.name, event.venue.address, event.description);
+  const googleCalendarUrl = buildGoogleCalendarUrl(event.name, startDate, endDate, event.venue.name, event.venue.address, event.description);
+  const icsContent = buildIcsContent(event.name, startDate, endDate, event.venue.name, event.venue.address, event.description);
 
   const downloadIcs = () => {
     const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${event.title.replace(/[^a-zA-Z0-9]/g, "_")}.ics`;
+    a.download = `${event.name.replace(/[^a-zA-Z0-9]/g, "_")}.ics`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

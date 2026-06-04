@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Map as MapIcon, List, MapPin, X, Locate, Sparkles, ChevronRight } from "lucide-react";
-import type { MockEvent } from "@/lib/types";
+import type { Event } from "@/lib/types";
 import type { CategorySlug } from "@/lib/categories";
 import type { City } from "@/lib/cities";
 import { useCity } from "@/hooks/use-city";
@@ -15,7 +15,7 @@ import { EventCard } from "./event-card";
 import { DatePicker } from "./date-picker";
 
 interface DiscoveryViewProps {
-  events: MockEvent[];
+  events: Event[];
   city: City;
   initialCategories?: CategorySlug[];
 }
@@ -57,7 +57,7 @@ export function DiscoveryView({
 
     if (dateFilter) {
       result = result.filter((e) => {
-        const eventDate = e.startDate.split("T")[0];
+        const eventDate = e.startTime.split("T")[0];
         return eventDate >= dateFilter.from && eventDate <= dateFilter.to;
       });
     }
@@ -176,6 +176,7 @@ export function DiscoveryView({
                     <EventCard
                       key={event.id}
                       event={event}
+                      citySlug={city.slug}
                       isHighlighted={hoveredEventId === event.id}
                       onMouseEnter={() => setHoveredEventId(event.id)}
                       onMouseLeave={() => setHoveredEventId(null)}
@@ -188,6 +189,7 @@ export function DiscoveryView({
                 <div className="relative h-full">
                   <EventMap
                     events={filteredEvents}
+                    citySlug={city.slug}
                     center={{ lat: city.lat, lng: city.lng }}
                     onEventHover={setHoveredEventId}
                     highlightedEventId={hoveredEventId}
@@ -218,7 +220,7 @@ export function DiscoveryView({
               ) : (
                 <div className="flex flex-col gap-3">
                   {filteredEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event.id} event={event} citySlug={city.slug} />
                   ))}
                 </div>
               )}
@@ -242,7 +244,7 @@ export function DiscoveryView({
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredEvents.map((event) => (
-                  <EventCard key={event.id} event={event} />
+                  <EventCard key={event.id} event={event} citySlug={city.slug} />
                 ))}
               </div>
             )}
@@ -282,6 +284,7 @@ export function DiscoveryView({
             <div className="relative flex-1">
               <EventMap
                 events={filteredEvents}
+                citySlug={city.slug}
                 center={{ lat: city.lat, lng: city.lng }}
               />
               <GeolocationButton

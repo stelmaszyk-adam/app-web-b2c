@@ -3,32 +3,29 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { MockEvent } from "@/lib/types";
+import type { Event } from "@/lib/types";
 import { CATEGORY_MAP, CATEGORIES } from "@/lib/categories";
 import { MapPopup } from "./map-popup";
 
 interface EventMapProps {
-  events: MockEvent[];
+  events: Event[];
+  citySlug: string;
   center: { lat: number; lng: number };
   onEventHover?: (eventId: string | null) => void;
   highlightedEventId?: string | null;
 }
 
-function buildGeoJSON(events: MockEvent[]): GeoJSON.FeatureCollection {
+function buildGeoJSON(events: Event[]): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
     features: events.map((e) => ({
       type: "Feature",
-      geometry: { type: "Point", coordinates: [e.lng, e.lat] },
+      geometry: { type: "Point", coordinates: [e.venue.lng, e.venue.lat] },
       properties: {
         id: e.id,
-        title: e.title,
+        title: e.name,
         category: e.category,
-        price: e.priceFrom,
-        date: e.date,
-        time: e.time,
-        venueName: e.venue.name,
-        venueAddress: e.venue.address,
+        price: e.price ?? 0,
       },
     })),
   };
@@ -38,13 +35,14 @@ const STADIA_KEY = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY ?? "";
 
 export function EventMap({
   events,
+  citySlug,
   center,
   onEventHover,
   highlightedEventId,
 }: EventMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<MockEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
   const styleUrl = STADIA_KEY
@@ -169,7 +167,7 @@ export function EventMap({
             "case",
             ["==", ["get", "price"], 0],
             "Free",
-            ["concat", ["to-string", ["get", "price"]], " zł"],
+            ["concat", ["to-string", ["get", "price"]], " zl"],
           ],
           "text-font": ["Open Sans Bold"],
           "text-size": 10,
@@ -252,6 +250,7 @@ export function EventMap({
     return (
       <FallbackMap
         events={events}
+        citySlug={citySlug}
         onEventHover={onEventHover}
         highlightedEventId={highlightedEventId}
       />
@@ -265,6 +264,7 @@ export function EventMap({
         <div className="absolute bottom-4 left-4 right-4 z-20 max-w-sm">
           <MapPopup
             event={selectedEvent}
+            citySlug={citySlug}
             onClose={() => setSelectedEvent(null)}
             inline
           />
@@ -277,20 +277,22 @@ export function EventMap({
 // Fallback map when no Stadia Maps API key is configured
 function FallbackMap({
   events,
+  citySlug,
   onEventHover,
   highlightedEventId,
 }: {
-  events: MockEvent[];
+  events: Event[];
+  citySlug: string;
   onEventHover?: (eventId: string | null) => void;
   highlightedEventId?: string | null;
 }) {
-  const [selectedEvent, setSelectedEvent] = useState<MockEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   const bounds = useMemo(() => {
     if (events.length === 0)
       return { minLat: 52.38, maxLat: 52.43, minLng: 16.88, maxLng: 16.95 };
-    const lats = events.map((e) => e.lat);
-    const lngs = events.map((e) => e.lng);
+    const lats = events.map((e) => e.venue.lat);
+    const lngs = events.map((e) => e.venue.lng);
     const pad = 0.005;
     return {
       minLat: Math.min(...lats) - pad,
@@ -317,9 +319,9 @@ function FallbackMap({
       {events.map((event) => {
         const cat = CATEGORY_MAP[event.category];
         const x =
-          ((event.lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * 100;
+          ((event.venue.lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * 100;
         const y =
-          ((bounds.maxLat - event.lat) / (bounds.maxLat - bounds.minLat)) * 100;
+          ((bounds.maxLat - event.venue.lat) / (bounds.maxLat - bounds.minLat)) * 100;
         const isHighlighted = highlightedEventId === event.id;
 
         return (
@@ -345,7 +347,7 @@ function FallbackMap({
                 <cat.icon className="h-3 w-3" strokeWidth={2} />
               )}
               <span className="text-[10px] font-semibold">
-                {event.priceFrom === 0 ? "Free" : `${event.priceFrom} zł`}
+                {event.price == null || event.price === 0 ? "Free" : `${event.price} zl`}
               </span>
             </div>
             <div
@@ -360,6 +362,7 @@ function FallbackMap({
         <div className="absolute bottom-4 left-4 right-4 z-20">
           <MapPopup
             event={selectedEvent}
+            citySlug={citySlug}
             onClose={() => setSelectedEvent(null)}
             inline
           />

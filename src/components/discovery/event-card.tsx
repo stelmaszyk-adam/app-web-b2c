@@ -1,14 +1,16 @@
 "use client";
 
-import { Clock, MapPin, Heart, AtSign } from "lucide-react";
+import { Clock, MapPin, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CATEGORY_MAP } from "@/lib/categories";
-import type { MockEvent } from "@/lib/types";
+import type { Event } from "@/lib/types";
+import { formatEventDate, formatEventTime } from "@/lib/types";
 import { EventImage } from "@/components/ui/event-image";
 
 interface EventCardProps {
-  event: MockEvent;
+  event: Event;
+  citySlug: string;
   isHighlighted?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -16,6 +18,7 @@ interface EventCardProps {
 
 export function EventCard({
   event,
+  citySlug,
   isHighlighted,
   onMouseEnter,
   onMouseLeave,
@@ -25,7 +28,7 @@ export function EventCard({
 
   return (
     <Link
-      href={`/${event.city}/event/${event.id}`}
+      href={`/${citySlug}/event/${event.id}`}
       className="block"
     >
     <article
@@ -40,30 +43,12 @@ export function EventCard({
       {/* Thumbnail */}
       <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-[var(--radius-md)]">
         <EventImage
-          src={event.imageUrl}
-          alt={event.title}
+          src={event.photoUrl}
+          alt={event.name}
           category={event.category}
           fill
           sizes="112px"
         />
-        {/* Badges */}
-        <div className="absolute left-1.5 top-1.5 flex flex-col gap-1">
-          {event.badges.includes("live") && (
-            <span className="bg-live-red rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
-              Na żywo
-            </span>
-          )}
-          {event.badges.includes("fast") && (
-            <span className="rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
-              Szybko znika
-            </span>
-          )}
-          {event.badges.includes("recur") && (
-            <span className="bg-info rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
-              Cotygodniowo
-            </span>
-          )}
-        </div>
         {/* Save button */}
         <button
           className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100"
@@ -88,13 +73,13 @@ export function EventCard({
         <div className="text-on-surface-variant flex items-center gap-1.5 text-xs">
           <Clock className="h-3 w-3 shrink-0" strokeWidth={1.75} />
           <span>
-            {event.date} · {event.time}
+            {formatEventDate(event.startTime)} · {formatEventTime(event.startTime)}
           </span>
         </div>
 
         {/* Title */}
         <h3 className="text-on-surface mt-0.5 line-clamp-2 text-sm font-semibold leading-tight">
-          {event.title}
+          {event.name}
         </h3>
 
         {/* Venue */}
@@ -105,22 +90,12 @@ export function EventCard({
           </span>
         </div>
 
-        {/* Scout attribution */}
-        {event.scoutUsername && (
-          <div className="text-on-surface-variant mt-1 flex items-center gap-1 text-[11px]">
-            <AtSign className="h-3 w-3 shrink-0" strokeWidth={2} />
-            <span>
-              {t("tippedBy", { username: event.scoutUsername })}
-            </span>
-          </div>
-        )}
-
         {/* Price */}
         <div className="mt-1">
           <span className="text-on-surface text-sm font-semibold">
-            {event.priceFrom === 0
+            {event.price == null || event.price === 0
               ? "Bezpłatne"
-              : `od ${event.priceFrom} zł`}
+              : `od ${event.price} zł`}
           </span>
         </div>
       </div>

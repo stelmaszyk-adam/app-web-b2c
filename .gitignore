@@ -36,8 +36,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# generated API client
+# generated API client & pulled spec
 src/api/generated/
+src/api/openapi.json
 
 # vercel
 .vercel

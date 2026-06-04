@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { getCityBySlug } from "@/lib/cities";
 import { fetchEventById } from "@/lib/api";
 import { CATEGORY_MAP } from "@/lib/categories";
+import { formatEventDate, formatEventTime } from "@/lib/types";
 import { EventDetailContent } from "@/components/event/event-detail-content";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildEventJsonLd } from "@/lib/structured-data";
@@ -27,8 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const t = await getTranslations({ locale, namespace: "eventDetail" });
 
+  const dateStr = formatEventDate(event.startTime, locale);
+
   const description = t("metaDescription", {
-    date: event.date,
+    date: dateStr,
     venue: event.venue.name,
     address: event.venue.address,
     description: event.description.slice(0, 120),
@@ -36,10 +39,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const canonicalPath = `/${citySlug}/event/${id}`;
   const canonicalUrl = `${BASE_URL}${canonicalPath}`;
-  const ogImageUrl = `${BASE_URL}/api/og?title=${encodeURIComponent(event.title)}&date=${encodeURIComponent(event.date)}&venue=${encodeURIComponent(event.venue.name)}`;
+  const ogImageUrl = `${BASE_URL}/api/og?title=${encodeURIComponent(event.name)}&date=${encodeURIComponent(dateStr)}&venue=${encodeURIComponent(event.venue.name)}`;
 
   return {
-    title: t("metaTitle", { title: event.title, venue: event.venue.name }),
+    title: t("metaTitle", { title: event.name, venue: event.venue.name }),
     description,
     alternates: {
       canonical: canonicalPath,
@@ -49,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: event.title,
+      title: event.name,
       description,
       url: canonicalUrl,
       type: "website",
@@ -58,7 +61,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: event.title,
+          alt: event.name,
         },
       ],
     },
@@ -76,20 +79,14 @@ export default async function EventDetailPage({ params }: Props) {
   const cat = CATEGORY_MAP[event.category];
   const t = await getTranslations({ locale, namespace: "eventDetail" });
 
-  const recurrenceLabel = event.recurrence
-    ? t(
-        `recurrence${event.recurrence.type.charAt(0).toUpperCase() + event.recurrence.type.slice(1)}` as
-          | "recurrenceDaily"
-          | "recurrenceWeekly"
-          | "recurrenceMonthly",
-      )
-    : null;
+  const dateStr = formatEventDate(event.startTime, locale);
+  const timeStr = formatEventTime(event.startTime);
 
   return (
     <article className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 lg:px-8">
-      <TrackEventDetailView eventId={event.id} eventTitle={event.title} />
-      <JsonLd data={buildEventJsonLd(event)} />
-      {/* SSR-visible content for SEO — always in raw HTML */}
+      <TrackEventDetailView eventId={event.id} eventTitle={event.name} />
+      <JsonLd data={buildEventJsonLd(event, citySlug)} />
+      {/* SSR-visible content for SEO */}
       <div className="mb-6">
         {/* Category badge */}
         <span
@@ -101,34 +98,17 @@ export default async function EventDetailPage({ params }: Props) {
         </span>
 
         <h1 className="text-on-surface mt-2 text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-          {event.title}
+          {event.name}
         </h1>
-
-        {/* Scout attribution */}
-        {event.scoutUsername && (
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary-container px-3 py-1.5 text-sm font-medium text-primary">
-            <svg
-              className="h-4 w-4 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <circle cx="12" cy="12" r="4" />
-              <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
-            </svg>
-            {t("tippedBy", { username: event.scoutUsername })}
-          </div>
-        )}
       </div>
 
       <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Left column — main content */}
+        {/* Left column */}
         <div className="flex-1">
           {/* Photo gallery */}
           <EventDetailContent event={event} citySlug={citySlug} locale={locale} />
 
-          {/* Event info — SSR visible */}
+          {/* Event info */}
           <div className="mt-6 space-y-4">
             {/* Date & Time */}
             <div className="text-on-surface flex items-center gap-2 text-base">
@@ -146,7 +126,7 @@ export default async function EventDetailPage({ params }: Props) {
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
               <span className="font-medium">
-                {event.date} · {event.time}
+                {dateStr} · {timeStr}
               </span>
             </div>
 
@@ -173,14 +153,6 @@ export default async function EventDetailPage({ params }: Props) {
                 <p className="text-on-surface-variant text-sm">{event.venue.address}</p>
               </div>
             </div>
-
-            {/* Recurring event indicator */}
-            {event.recurrence && recurrenceLabel && (
-              <RecurringBadge
-                label={recurrenceLabel}
-                seriesLabel={t("partOfSeries", { type: recurrenceLabel.toLowerCase() })}
-              />
-            )}
           </div>
 
           {/* Description */}
@@ -197,17 +169,6 @@ export default async function EventDetailPage({ params }: Props) {
               {t("source")}: {event.source}
             </p>
           )}
-
-          {/* Recurring dates expandable */}
-          {event.recurrence && (
-            <RecurringDates
-              instances={event.recurrence.instances}
-              citySlug={citySlug}
-              locale={locale}
-              viewAllLabel={t("viewAllDates")}
-              hideLabel={t("hideAllDates")}
-            />
-          )}
         </div>
 
         {/* Right sidebar */}
@@ -215,9 +176,9 @@ export default async function EventDetailPage({ params }: Props) {
           {/* Price & CTA card */}
           <div className="bg-surface-high rounded-[var(--radius-xl)] p-6">
             <p className="text-on-surface mb-4 text-2xl font-bold">
-              {event.priceFrom === 0
+              {event.price == null || event.price === 0
                 ? t("free")
-                : t("priceFrom", { price: event.priceFrom.toString() })}
+                : t("priceFrom", { price: event.price.toString() })}
             </p>
 
             {/* Buy tickets CTA */}
@@ -319,69 +280,5 @@ export default async function EventDetailPage({ params }: Props) {
         </aside>
       </div>
     </article>
-  );
-}
-
-function RecurringBadge({ seriesLabel }: { label: string; seriesLabel: string }) {
-  return (
-    <div className="bg-info-container flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2">
-      <svg
-        className="h-4 w-4 shrink-0 text-info"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <polyline points="17 1 21 5 17 9" />
-        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-        <polyline points="7 23 3 19 7 15" />
-        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-      </svg>
-      <span className="text-on-surface text-sm font-medium">{seriesLabel}</span>
-    </div>
-  );
-}
-
-function RecurringDates({
-  instances,
-  citySlug,
-  locale,
-  viewAllLabel,
-  hideLabel,
-}: {
-  instances: { id: string; date: string; time: string }[];
-  citySlug: string;
-  locale: string;
-  viewAllLabel: string;
-  hideLabel: string;
-}) {
-  return (
-    <details className="mt-6 group">
-      <summary className="flex cursor-pointer items-center gap-2 text-sm font-medium text-primary hover:underline list-none [&::-webkit-details-marker]:hidden">
-        <svg
-          className="h-4 w-4 transition-transform group-open:rotate-90"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-        <span className="group-open:hidden">{viewAllLabel}</span>
-        <span className="hidden group-open:inline">{hideLabel}</span>
-      </summary>
-      <ul className="mt-3 space-y-2 pl-6">
-        {instances.map((inst) => (
-          <li key={inst.id}>
-            <a
-              href={`/${locale}/${citySlug}/event/${inst.id}`}
-              className="text-on-surface hover:text-primary text-sm transition-colors"
-            >
-              {inst.date} · {inst.time}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </details>
   );
 }

@@ -3,6 +3,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 import { withSentryConfig } from "@sentry/nextjs";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -16,7 +18,20 @@ const nextConfig: NextConfig = {
         hostname: "imagedelivery.net",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+        pathname: "/**",
+      },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${API_URL}/:path*`,
+      },
+    ];
   },
 };
 

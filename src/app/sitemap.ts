@@ -1,8 +1,6 @@
 import type { MetadataRoute } from "next";
 import { CITIES } from "@/lib/cities";
 import { CATEGORIES } from "@/lib/categories";
-import { MOCK_EVENTS } from "@/lib/mock-events";
-import { MOCK_VENUES } from "@/lib/mock-venues";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://eventapp.dev";
 
@@ -51,26 +49,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.6,
       });
     }
-  }
-
-  // Event detail pages
-  for (const event of MOCK_EVENTS) {
-    entries.push({
-      url: `${BASE_URL}/${event.city}/event/${event.id}`,
-      lastModified: event.startDate,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    });
-  }
-
-  // Venue profile pages
-  for (const venue of MOCK_VENUES) {
-    entries.push({
-      url: `${BASE_URL}/${venue.city}/venue/${venue.id}`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    });
   }
 
   return entries;

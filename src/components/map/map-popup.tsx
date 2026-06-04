@@ -3,16 +3,18 @@
 import { X, Clock, MapPin } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CATEGORY_MAP } from "@/lib/categories";
-import type { MockEvent } from "@/lib/types";
+import type { Event } from "@/lib/types";
+import { formatEventDate, formatEventTime } from "@/lib/types";
 import { EventImage } from "@/components/ui/event-image";
 
 interface MapPopupProps {
-  event: MockEvent;
+  event: Event;
+  citySlug: string;
   onClose: () => void;
   inline?: boolean;
 }
 
-export function MapPopup({ event, onClose, inline }: MapPopupProps) {
+export function MapPopup({ event, citySlug, onClose, inline }: MapPopupProps) {
   const cat = CATEGORY_MAP[event.category];
 
   return (
@@ -22,8 +24,8 @@ export function MapPopup({ event, onClose, inline }: MapPopupProps) {
       {/* Image */}
       <div className="relative h-32 w-full">
         <EventImage
-          src={event.imageUrl || null}
-          alt={event.title}
+          src={event.photoUrl}
+          alt={event.name}
           category={event.category}
           fill
           sizes="(max-width: 640px) 100vw, 384px"
@@ -49,11 +51,11 @@ export function MapPopup({ event, onClose, inline }: MapPopupProps) {
         <div className="text-on-surface-variant mb-1 flex items-center gap-1.5 text-xs">
           <Clock className="h-3 w-3" strokeWidth={1.75} />
           <span>
-            {event.date} · {event.time}
+            {formatEventDate(event.startTime)} · {formatEventTime(event.startTime)}
           </span>
         </div>
         <h3 className="text-on-surface line-clamp-2 text-sm font-semibold">
-          {event.title}
+          {event.name}
         </h3>
         <div className="text-on-surface-variant mt-1 flex items-center gap-1.5 text-xs">
           <MapPin className="h-3 w-3" strokeWidth={1.75} />
@@ -61,15 +63,15 @@ export function MapPopup({ event, onClose, inline }: MapPopupProps) {
         </div>
         <div className="mt-2 flex items-center justify-between">
           <span className="text-on-surface text-sm font-semibold">
-            {event.priceFrom === 0
+            {event.price == null || event.price === 0
               ? "Bezpłatne"
-              : `od ${event.priceFrom} zł`}
+              : `od ${event.price} zł`}
           </span>
           <Link
-            href={`/${event.city}/event/${event.id}`}
+            href={`/${citySlug}/event/${event.id}`}
             className="text-primary text-xs font-medium hover:underline"
           >
-            Zobacz szczegóły
+            Zobacz szczegoly
           </Link>
         </div>
       </div>

@@ -5,9 +5,11 @@ import {
   extractCorrelationId,
 } from "@/lib/sentry-utils";
 
-export const api = createClient<paths>({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000",
-});
+const baseUrl = typeof window === "undefined"
+  ? (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000")
+  : "/api";
+
+export const api = createClient<paths>({ baseUrl });
 
 api.use({
   async onResponse({ response }) {

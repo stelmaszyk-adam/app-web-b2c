@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { getCityBySlug, CITIES } from "@/lib/cities";
 import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 import { fetchEvents } from "@/lib/api";
+import { formatEventDate, formatEventTime } from "@/lib/types";
 import { DiscoveryView } from "@/components/discovery/discovery-view";
 
 type Props = {
@@ -122,7 +123,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityFilterPage({ params }: Props) {
-  const { city: citySlug, filter } = await params;
+  const { locale, city: citySlug, filter } = await params;
   const city = getCityBySlug(citySlug);
 
   if (!city) {
@@ -157,12 +158,12 @@ export default async function CityFilterPage({ params }: Props) {
       {/* SSR event data for SEO + screen readers */}
       <div className="sr-only">
         <h1>
-          {filterLabel} — Wydarzenia w {city.namePl} — {events.length} wydarzeń
+          {filterLabel} — Wydarzenia w {city.namePl} — {events.length} wydarzen
         </h1>
         <ul>
           {events.map((event) => (
             <li key={event.id}>
-              {event.title} — {event.venue.name} — {event.date} {event.time}
+              {event.name} — {event.venue.name} — {formatEventDate(event.startTime, locale)} {formatEventTime(event.startTime)}
             </li>
           ))}
         </ul>
