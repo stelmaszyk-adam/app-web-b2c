@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { CITIES } from "@/lib/cities";
 import { CATEGORIES } from "@/lib/categories";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://eventapp.dev";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://wydarzka.dev";
 
 // Date-based filters that have dedicated pages
 const DATE_FILTERS = ["this-weekend", "today", "tomorrow"];

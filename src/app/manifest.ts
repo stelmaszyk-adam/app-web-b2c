@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "EventApp - Odkrywaj wydarzenia w Twoim mieście",
-    short_name: "EventApp",
+    name: "Wydarzka - Odkrywaj wydarzenia w Twoim mieście",
+    short_name: "Wydarzka",
     description:
       "Odkrywaj najlepsze wydarzenia w polskich miastach — koncerty, wystawy, festiwale i więcej.",
     start_url: "/",

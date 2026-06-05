@@ -13,7 +13,7 @@ import {
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useCity } from "@/hooks/use-city";
 
-const ORGANIZER_DASHBOARD_URL = "https://dashboard.eventapp.dev";
+const ORGANIZER_DASHBOARD_URL = "https://dashboard.wydarzka.dev";
 
 export function AppHeader() {
   const t = useTranslations("header");
@@ -34,13 +34,13 @@ export function AppHeader() {
         <Link
           href="/"
           className="inline-flex items-center gap-2.5"
-          aria-label="EventApp"
+          aria-label="Wydarzka"
         >
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[var(--brand-gradient)] text-sm font-bold tracking-wide text-white shadow-brand">
             E
           </span>
           <span className="text-on-surface text-lg font-bold tracking-tight max-md:hidden">
-            eventapp
+            wydarzka
           </span>
         </Link>
 

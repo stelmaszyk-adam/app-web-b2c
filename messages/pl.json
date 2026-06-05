@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "title": "EventApp - Odkryj wydarzenia w Twoim mieście",
+    "title": "Wydarzka - Odkryj wydarzenia w Twoim mieście",
     "description": "Odkryj najlepsze wydarzenia w polskich miastach. Koncerty, wystawy, festiwale i więcej."
   },
   "home": {
-    "heading": "EventApp",
+    "heading": "Wydarzka",
     "subheading": "Odkryj najlepsze wydarzenia w Twoim mieście.",
     "browseEvents": "Przeglądaj wydarzenia"
   },
@@ -51,11 +51,11 @@
     "presetCustom": "Dowolny zakres",
     "clearDate": "Wyczyść",
     "applyDate": "Zastosuj",
-    "cityMetaTitle": "Wydarzenia w {city} — EventApp",
+    "cityMetaTitle": "Wydarzenia w {city} — Wydarzka",
     "cityMetaDescription": "Odkryj najlepsze wydarzenia w {city}. Koncerty, wystawy, festiwale i więcej na mapie.",
-    "categoryMetaTitle": "{category} w {city} — EventApp",
+    "categoryMetaTitle": "{category} w {city} — Wydarzka",
     "categoryMetaDescription": "Przeglądaj wydarzenia z kategorii {category} w {city}.",
-    "dateFilterMetaTitle": "{filter} w {city} — EventApp",
+    "dateFilterMetaTitle": "{filter} w {city} — Wydarzka",
     "dateFilterMetaDescription": "Wydarzenia {filter} w {city}. Sprawdź co się dzieje.",
     "categories": {
       "music": "Muzyka",
@@ -88,7 +88,7 @@
     "privacyPolicy": "Polityka prywatności",
     "cookiePolicy": "Polityka cookies",
     "manageCookies": "Zarządzaj cookies",
-    "copyright": "© {year} eventapp · Wszystkie prawa zastrzeżone",
+    "copyright": "© {year} wydarzka · Wszystkie prawa zastrzeżone",
     "allCities": "Wszystkie miasta",
     "music": "Muzyka",
     "clubs": "Kluby",
@@ -122,11 +122,11 @@
     "googlePlay": "Google Play",
     "free": "Bezplatne",
     "priceFrom": "od {price} zl",
-    "metaTitle": "{title} — {venue} — EventApp",
+    "metaTitle": "{title} — {venue} — Wydarzka",
     "metaDescription": "{date} · {venue}, {address}. {description}"
   },
   "venueProfile": {
-    "metaTitle": "{name} — EventApp",
+    "metaTitle": "{name} — Wydarzka",
     "metaDescription": "{name} — {address}. {description}",
     "venues": "Miejsca",
     "followers": "obserwujacych",
@@ -193,7 +193,7 @@
   "cookiePolicy": {
     "title": "Polityka cookies",
     "metaDescription": "Dowiedz sie, jakich plikow cookie uzywamy, w jakim celu i jak dlugo je przechowujemy.",
-    "intro": "Ta strona wyjasnia, jakich plikow cookie i technologii sledzacych uzywamy w serwisie EventApp, w jakim celu oraz jak dlugo sa przechowywane.",
+    "intro": "Ta strona wyjasnia, jakich plikow cookie i technologii sledzacych uzywamy w serwisie Wydarzka, w jakim celu oraz jak dlugo sa przechowywane.",
     "tableName": "Nazwa",
     "tablePurpose": "Cel",
     "tableRetention": "Czas przechowywania",

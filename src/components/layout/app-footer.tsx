@@ -5,7 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useCookieConsentContext } from "@/components/cookie/cookie-consent-provider";
 
-const ORGANIZER_DASHBOARD_URL = "https://dashboard.eventapp.dev";
+const ORGANIZER_DASHBOARD_URL = "https://dashboard.wydarzka.dev";
 
 const CITIES = ["Poznan", "Krakow", "Warszawa", "Wroclaw"] as const;
 
@@ -24,7 +24,7 @@ export function AppFooter() {
               E
             </span>
             <span className="text-on-surface text-lg font-bold tracking-tight">
-              eventapp
+              wydarzka
             </span>
           </div>
           <p className="text-on-surface-variant mt-3 max-w-[280px] text-sm">

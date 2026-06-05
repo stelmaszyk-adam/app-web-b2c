@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "title": "EventApp - Discover events in your city",
+    "title": "Wydarzka - Discover events in your city",
     "description": "Discover the best events in Polish cities. Concerts, exhibitions, festivals and more."
   },
   "home": {
-    "heading": "EventApp",
+    "heading": "Wydarzka",
     "subheading": "Discover the best events in your city.",
     "browseEvents": "Browse events"
   },
@@ -51,11 +51,11 @@
     "presetCustom": "Custom range",
     "clearDate": "Clear",
     "applyDate": "Apply",
-    "cityMetaTitle": "Events in {city} — EventApp",
+    "cityMetaTitle": "Events in {city} — Wydarzka",
     "cityMetaDescription": "Discover the best events in {city}. Concerts, exhibitions, festivals and more on the map.",
-    "categoryMetaTitle": "{category} in {city} — EventApp",
+    "categoryMetaTitle": "{category} in {city} — Wydarzka",
     "categoryMetaDescription": "Browse {category} events in {city}.",
-    "dateFilterMetaTitle": "{filter} in {city} — EventApp",
+    "dateFilterMetaTitle": "{filter} in {city} — Wydarzka",
     "dateFilterMetaDescription": "Events {filter} in {city}. See what's happening.",
     "categories": {
       "music": "Music",
@@ -88,7 +88,7 @@
     "privacyPolicy": "Privacy Policy",
     "cookiePolicy": "Cookie Policy",
     "manageCookies": "Manage cookies",
-    "copyright": "© {year} eventapp · All rights reserved",
+    "copyright": "© {year} wydarzka · All rights reserved",
     "allCities": "All cities",
     "music": "Music",
     "clubs": "Clubs",
@@ -122,11 +122,11 @@
     "googlePlay": "Google Play",
     "free": "Free",
     "priceFrom": "from {price} PLN",
-    "metaTitle": "{title} — {venue} — EventApp",
+    "metaTitle": "{title} — {venue} — Wydarzka",
     "metaDescription": "{date} · {venue}, {address}. {description}"
   },
   "venueProfile": {
-    "metaTitle": "{name} — EventApp",
+    "metaTitle": "{name} — Wydarzka",
     "metaDescription": "{name} — {address}. {description}",
     "venues": "Venues",
     "followers": "followers",
@@ -193,7 +193,7 @@
   "cookiePolicy": {
     "title": "Cookie Policy",
     "metaDescription": "Learn about the cookies we use, their purpose, and how long they are stored.",
-    "intro": "This page explains which cookies and tracking technologies we use on EventApp, their purpose, and how long they are stored.",
+    "intro": "This page explains which cookies and tracking technologies we use on Wydarzka, their purpose, and how long they are stored.",
     "tableName": "Name",
     "tablePurpose": "Purpose",
     "tableRetention": "Retention",

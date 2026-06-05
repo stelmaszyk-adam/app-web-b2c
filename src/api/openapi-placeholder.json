@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "EventApp API",
+    "title": "Wydarzka API",
     "version": "0.0.1",
     "description": "Placeholder spec — run `pnpm api:sync` with backend running to get the real spec."
   },

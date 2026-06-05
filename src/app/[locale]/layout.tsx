@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     metadataBase: new URL(
-      process.env.NEXT_PUBLIC_BASE_URL ?? "https://eventapp.dev",
+      process.env.NEXT_PUBLIC_BASE_URL ?? "https://wydarzka.dev",
     ),
     title: t("title"),
     description: t("description"),

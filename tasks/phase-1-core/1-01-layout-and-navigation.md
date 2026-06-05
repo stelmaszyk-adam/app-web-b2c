@@ -28,18 +28,18 @@ Build the responsive layout shell that wraps every page in the Web B2C applicati
 
 - [ ] P0 **Header link — "For Organizers":**
   - Visible in the top navbar on all pages (desktop: text link; tablet/mobile: inside hamburger menu)
-  - Links to `dashboard.eventapp.dev` (opens in new tab, `target="_blank"` with `rel="noopener noreferrer"`)
+  - Links to `dashboard.wydarzka.dev` (opens in new tab, `target="_blank"` with `rel="noopener noreferrer"`)
   - Label: "For Organizers" (PL: "Dla Organizatorów") — uses i18n translation key
   - Positioned after main nav items but before language toggle
   - Visual treatment: tertiary/text style — should not compete with primary CTAs (e.g. no gradient, no button shape)
 - [ ] P0 **Footer link — "Organizer Dashboard":**
   - In a "For Business" or "Organizers" section of the footer (alongside Terms, Privacy, Cookie Policy links)
   - Label: "Organizer Dashboard" (PL: "Panel Organizatora")
-  - Same external link behavior (`dashboard.eventapp.dev`, new tab)
+  - Same external link behavior (`dashboard.wydarzka.dev`, new tab)
   - Optionally include a short description: "Manage your venue, create events, and track analytics"
 - [ ] P1 **Contextual CTA on venue profile page:**
   - Below the venue info section, show a subtle CTA: "Is this your venue? Claim it on the Organizer Dashboard"
-  - Links to `dashboard.eventapp.dev` (or a deep link to the venue claim flow if available)
+  - Links to `dashboard.wydarzka.dev` (or a deep link to the venue claim flow if available)
   - Only shown as a static link (Web B2C has no auth, so no conditional logic based on ownership)
 
 ## Design Reference
@@ -59,7 +59,7 @@ Build the responsive layout shell that wraps every page in the Web B2C applicati
 - At 1024px a three-column card grid is active; filter sidebar is persistent on map view
 - All interactive elements have a minimum 44x44px tap target
 - "Dla Organizatorów" link is visible in the desktop header and inside the hamburger menu on mobile/tablet
-- "Dla Organizatorów" header link opens `dashboard.eventapp.dev` in a new tab with `rel="noopener noreferrer"`
+- "Dla Organizatorów" header link opens `dashboard.wydarzka.dev` in a new tab with `rel="noopener noreferrer"`
 - "Panel Organizatora" footer link is present in the footer's business/organizers section
 - Both organizer links use i18n translation keys (not hardcoded strings)
 - `pnpm type-check` and `pnpm lint` pass with no errors

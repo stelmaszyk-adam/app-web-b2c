@@ -210,7 +210,7 @@ export default async function VenueProfilePage({ params }: Props) {
               <span className="text-on-surface-variant text-sm">
                 {t("claimVenue")}{" "}
                 <a
-                  href="https://dashboard.eventapp.dev"
+                  href="https://dashboard.wydarzka.dev"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-primary hover:underline"

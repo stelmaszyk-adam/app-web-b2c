@@ -1,8 +1,8 @@
 import { CITY_MAP, type City } from "./cities";
 
-const STORAGE_KEY = "eventapp:selected-city";
-const COOKIE_NAME = "eventapp-city";
-const GEO_DENIED_KEY = "eventapp:geo-denied";
+const STORAGE_KEY = "wydarzka:selected-city";
+const COOKIE_NAME = "wydarzka-city";
+const GEO_DENIED_KEY = "wydarzka:geo-denied";
 
 export function getSavedCity(): City | null {
   if (typeof window === "undefined") return null;

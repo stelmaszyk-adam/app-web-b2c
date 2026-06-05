@@ -1,6 +1,6 @@
 import type { Event, Venue } from "./types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://eventapp.dev";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://wydarzka.dev";
 
 export function buildEventJsonLd(event: Event, citySlug: string) {
   const jsonLd: Record<string, unknown> = {

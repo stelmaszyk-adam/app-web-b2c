@@ -1,8 +1,8 @@
-# EventApp Web B2C
+# Wydarzka Web B2C
 
 Public-facing event discovery website for Polish cities. Read-only, SEO-optimized Next.js application with server-side rendering.
 
-**Domain:** `eventapp.dev`
+**Domain:** `wydarzka.dev`
 **Port:** `3001`
 
 ## Tech Stack
@@ -132,8 +132,8 @@ messages/
 | `NEXT_PUBLIC_API_URL`            | Backend API base URL     | `http://localhost:3000`       |
 | `NEXT_PUBLIC_API_MOCKING`        | Enable MSW API mocking   | `false`                       |
 | `NEXT_PUBLIC_STADIA_MAPS_API_KEY`| Stadia Maps API key      | —                             |
-| `SENTRY_ORG`                     | Sentry organization      | `eventapp`                    |
-| `SENTRY_PROJECT`                 | Sentry project name      | `eventapp-web-b2c`           |
+| `SENTRY_ORG`                     | Sentry organization      | `wydarzka`                    |
+| `SENTRY_PROJECT`                 | Sentry project name      | `wydarzka-web-b2c`           |
 | `SENTRY_AUTH_TOKEN`              | Sentry auth token        | —                             |
 | `NEXT_PUBLIC_POSTHOG_KEY`        | PostHog project API key  | —                             |
 | `NEXT_PUBLIC_POSTHOG_HOST`       | PostHog ingest endpoint  | `https://eu.i.posthog.com`   |

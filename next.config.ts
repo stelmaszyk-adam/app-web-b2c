@@ -42,8 +42,8 @@ const analyze = withBundleAnalyzer({
 });
 
 export default withSentryConfig(analyze(withNextIntl(nextConfig)), {
-  org: process.env.SENTRY_ORG ?? "eventapp",
-  project: process.env.SENTRY_PROJECT ?? "eventapp-web-b2c",
+  org: process.env.SENTRY_ORG ?? "wydarzka",
+  project: process.env.SENTRY_PROJECT ?? "wydarzka-web-b2c",
   authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
   tunnelRoute: "/sentry-tunnel",

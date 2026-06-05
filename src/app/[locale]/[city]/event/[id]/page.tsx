@@ -19,7 +19,7 @@ type Props = {
   params: Promise<{ locale: string; city: string; id: string }>;
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://eventapp.dev";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://wydarzka.dev";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, city: citySlug, id } = await params;

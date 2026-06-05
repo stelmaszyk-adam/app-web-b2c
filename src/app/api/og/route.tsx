@@ -5,7 +5,7 @@ export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
-  const title = searchParams.get("title") ?? "EventApp";
+  const title = searchParams.get("title") ?? "Wydarzka";
   const date = searchParams.get("date") ?? "";
   const venue = searchParams.get("venue") ?? "";
 
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
               letterSpacing: "-0.02em",
             }}
           >
-            EventApp
+            Wydarzka
           </span>
         </div>
 

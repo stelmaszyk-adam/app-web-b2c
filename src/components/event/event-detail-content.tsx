@@ -269,7 +269,7 @@ function buildIcsContent(
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//EventApp//EventApp//EN",
+    "PRODID:-//Wydarzka//Wydarzka//EN",
     "BEGIN:VEVENT",
     `DTSTART:${formatDateForIcs(start)}`,
     `DTEND:${formatDateForIcs(end)}`,

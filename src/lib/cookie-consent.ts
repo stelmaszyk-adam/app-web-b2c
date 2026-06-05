@@ -1,4 +1,4 @@
-const STORAGE_KEY = "eventapp_cookie_consent";
+const STORAGE_KEY = "wydarzka_cookie_consent";
 const CONSENT_EXPIRY_DAYS = 365;
 
 export type ConsentCategories = {

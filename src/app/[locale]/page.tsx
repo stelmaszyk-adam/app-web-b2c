@@ -14,7 +14,7 @@ export default async function Home({
 
   // 1. Check for persisted city cookie (set by client when user picks a city)
   const cookieStore = await cookies();
-  const savedSlug = cookieStore.get("eventapp-city")?.value;
+  const savedSlug = cookieStore.get("wydarzka-city")?.value;
   if (savedSlug && getCityBySlug(savedSlug)) {
     redirect(`${prefix}/${savedSlug}`);
   }

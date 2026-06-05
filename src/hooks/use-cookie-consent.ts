@@ -25,7 +25,7 @@ let cachedRaw: string | null = null;
 function getSnapshot(): ConsentCategories | null {
   const raw =
     typeof window !== "undefined"
-      ? localStorage.getItem("eventapp_cookie_consent")
+      ? localStorage.getItem("wydarzka_cookie_consent")
       : null;
   if (raw !== cachedRaw) {
     cachedRaw = raw;

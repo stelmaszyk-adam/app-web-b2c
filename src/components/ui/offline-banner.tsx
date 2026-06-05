@@ -29,7 +29,7 @@ export function OfflineBanner() {
     };
   }, []);
 
-  if (!isOffline || isMocking) return null;
+  if (!isOffline || isMocking || process.env.NODE_ENV === "development") return null;
 
   return (
     <div

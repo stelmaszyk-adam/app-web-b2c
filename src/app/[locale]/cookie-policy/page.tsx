@@ -71,7 +71,7 @@ export default function CookiePolicyPage() {
 
   const essentialCookies: CookieTableRow[] = [
     {
-      name: "eventapp_cookie_consent",
+      name: "wydarzka_cookie_consent",
       purpose: t("consentCookiePurpose"),
       retention: t("consentCookieRetention"),
     },
