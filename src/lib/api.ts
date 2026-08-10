@@ -9,6 +9,19 @@ interface FetchEventsParams {
   dateFrom?: string;
   dateTo?: string;
   search?: string;
+  /** Search radius in km around the city center (backend default: 5, max: 150). */
+  radius?: number;
+}
+
+/** Backend page size caps: /events allows up to 100/page, /events/search up to 50/page. */
+const LIST_PAGE_LIMIT = 100;
+const SEARCH_PAGE_LIMIT = 50;
+/** Safety cap on total events fetched per request (map/list should show the full city, not just page 1). */
+const MAX_EVENTS = 500;
+
+interface PagedResponse {
+  data: unknown[];
+  meta?: { nextCursor: string | null; hasMore: boolean };
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -81,31 +94,81 @@ function mapVenue(raw: any): Venue {
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+/**
+ * Fetches every page from a cursor-paginated endpoint (up to MAX_EVENTS), since
+ * the backend only returns one page (max 100 items for /events, 50 for
+ * /events/search) per request — without this loop, city views with more
+ * events than the page size silently only showed the first page.
+ */
+async function fetchAllPages(
+  path: "/events" | "/events/search",
+  baseQuery: Record<string, unknown>,
+  pageLimit: number,
+): Promise<unknown[]> {
+  const results: unknown[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const { data, error } = await api.GET(path, {
+      // Query shape genuinely differs per path (e.g. only /events/search has `q`);
+      // baseQuery is built per-call-site to match, so this cast is safe.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      params: { query: { ...baseQuery, limit: pageLimit, cursor } as any },
+    });
+
+    if (error) {
+      console.error(`Failed to fetch ${path}:`, error);
+      break;
+    }
+
+    const response = data as unknown as PagedResponse;
+    results.push(...response.data);
+    cursor = response.meta?.hasMore ? response.meta.nextCursor ?? undefined : undefined;
+  } while (cursor && results.length < MAX_EVENTS);
+
+  return results;
+}
+
 export async function fetchEvents(
   params: FetchEventsParams,
 ): Promise<Event[]> {
   const city = params.city ? getCityBySlug(params.city) : undefined;
+  const category = params.categories?.[0];
 
-  const { data, error } = await api.GET("/events", {
-    params: {
-      query: {
+  if (params.search) {
+    const raw = await fetchAllPages(
+      "/events/search",
+      {
+        q: params.search,
         lat: city?.lat,
         lng: city?.lng,
-        category: params.categories,
-        dateFrom: params.dateFrom,
-        dateTo: params.dateTo,
-        search: params.search,
+        radius: params.radius,
+        category,
+        date_from: params.dateFrom,
+        date_to: params.dateTo,
       },
-    },
-  });
+      SEARCH_PAGE_LIMIT,
+    );
+    return raw.map(mapEvent);
+  }
 
-  if (error) {
-    console.error("Failed to fetch events:", error);
+  if (!city) {
     return [];
   }
 
-  const response = data as { data: unknown[] };
-  return response.data.map(mapEvent);
+  const raw = await fetchAllPages(
+    "/events",
+    {
+      lat: city.lat,
+      lng: city.lng,
+      radius: params.radius,
+      category,
+      date_from: params.dateFrom,
+      date_to: params.dateTo,
+    },
+    LIST_PAGE_LIMIT,
+  );
+  return raw.map(mapEvent);
 }
 
 export async function fetchEventById(id: string): Promise<Event | null> {
@@ -117,7 +180,7 @@ export async function fetchEventById(id: string): Promise<Event | null> {
     return null;
   }
 
-  const response = data as { data: unknown };
+  const response = data as unknown as { data: unknown };
   return mapEvent(response.data);
 }
 
@@ -130,7 +193,7 @@ export async function fetchVenueById(id: string): Promise<Venue | null> {
     return null;
   }
 
-  const response = data as { data: unknown };
+  const response = data as unknown as { data: unknown };
   return mapVenue(response.data);
 }
 
@@ -144,6 +207,6 @@ export async function fetchEventsByVenueId(venueId: string): Promise<Event[]> {
     return [];
   }
 
-  const response = (data as { data: unknown[] }) ?? { data: [] };
+  const response = (data as unknown as { data: unknown[] }) ?? { data: [] };
   return response.data.map(mapEvent);
 }

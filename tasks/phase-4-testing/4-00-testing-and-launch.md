@@ -17,25 +17,25 @@ Verify that the Web B2C application is production-ready by running end-to-end te
 
 ### 1. End-to-End Tests
 
-- [ ] P0 E2E test: city listing page renders events correctly (SSR verification)
-- [ ] P0 E2E test: event detail page has correct OG meta tags (verify with HTML parser)
-- [ ] P0 E2E test: PostHog does NOT fire before cookie consent is granted (GDPR compliance)
+- [ ] P0 E2E test: city listing page renders events correctly (SSR verification) — NOT DONE: no test framework (Jest/Vitest/Playwright/Cypress) or test files exist in the repo
+- [ ] P0 E2E test: event detail page has correct OG meta tags (verify with HTML parser) — NOT DONE: no such test exists (the OG metadata itself is implemented, see task 1-07)
+- [ ] P0 E2E test: PostHog does NOT fire before cookie consent is granted (GDPR compliance) — NOT DONE: no such test exists (the consent gating itself is implemented, see task 1-08)
 
 ### 2. SEO Verification
 
-- [ ] P0 SEO verification: validate `sitemap.xml`, `robots.txt`, and structured data (JSON-LD) with Google Rich Results Test
+- [ ] P0 SEO verification: validate `sitemap.xml`, `robots.txt`, and structured data (JSON-LD) with Google Rich Results Test — NOT DONE: generators exist, but no documented/automated Rich Results Test validation run
 
 ### 3. Cross-Browser Testing
 
-- [ ] P0 Cross-browser testing: Chrome, Safari, Firefox (desktop + mobile viewports)
+- [ ] P0 Cross-browser testing: Chrome, Safari, Firefox (desktop + mobile viewports) — NOT DONE: no test artifacts, checklist, or CI browser matrix found
 
 ### 4. Performance Audits
 
-- [ ] P1 Lighthouse audit: Performance >= 80, SEO >= 80, Accessibility >= 80 on all public pages (note: task 1-13 sets a stricter >= 90 target for key pages — event detail, venue profile, city listing)
+- [ ] P1 Lighthouse audit: Performance >= 80, SEO >= 80, Accessibility >= 80 on all public pages (note: task 1-13 sets a stricter >= 90 target for key pages — event detail, venue profile, city listing) — PARTIAL: Lighthouse CI enforces performance >= 80, but accessibility/SEO are `warn`-only (not enforced), and only a single URL (`/pl`) is audited, not all public pages
 
 ### 5. Accessibility Audit
 
-- [ ] P1 Accessibility audit: keyboard navigation, screen reader testing on key pages (event detail, venue profile, city listing)
+- [ ] P1 Accessibility audit: keyboard navigation, screen reader testing on key pages (event detail, venue profile, city listing) — NOT DONE: no audit reports, axe CI gate, or documented screen-reader/keyboard test results (though some underlying a11y features exist, see task 1-13)
 
 ## Acceptance Criteria
 

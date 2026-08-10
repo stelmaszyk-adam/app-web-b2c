@@ -7,21 +7,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 const nextConfig: NextConfig = {
   images: {
+    // Event images are hotlinked from many different scraped sources (city
+    // portals, ticketing sites, Google Places, arbitrary venue websites via
+    // JSON-LD), so the source hostname isn't known ahead of time. Allow any
+    // HTTPS host rather than maintaining an allowlist that breaks every time
+    // a new import source is added.
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "*.r2.cloudflarestorage.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "imagedelivery.net",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "picsum.photos",
-        pathname: "/**",
+        hostname: "**",
       },
     ],
   },

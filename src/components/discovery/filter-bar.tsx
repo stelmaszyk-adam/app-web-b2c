@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Calendar, Flame } from "lucide-react";
 import { CATEGORIES, type CategorySlug } from "@/lib/categories";
+import { DistanceFilter } from "./distance-filter";
 
 interface FilterBarProps {
   selectedCategories: CategorySlug[];
@@ -11,6 +12,9 @@ interface FilterBarProps {
   dateLabel?: string;
   happeningNow?: boolean;
   onToggleHappeningNow?: () => void;
+  distanceKm?: number | null;
+  onDistanceChange?: (km: number | null) => void;
+  cityName?: string;
 }
 
 export function FilterBar({
@@ -20,11 +24,37 @@ export function FilterBar({
   dateLabel,
   happeningNow,
   onToggleHappeningNow,
+  distanceKm,
+  onDistanceChange,
+  cityName,
 }: FilterBarProps) {
   const t = useTranslations("discovery");
 
   return (
     <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-1" role="toolbar" aria-label={t("filterCategories")}>
+      {/* Date filter */}
+      <button
+        onClick={onDateFilterClick}
+        className="bg-surface-low text-on-surface-variant hover:bg-surface-mid inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors"
+      >
+        <Calendar className="h-3.5 w-3.5" strokeWidth={1.75} />
+        {dateLabel ?? t("dateFilter")}
+      </button>
+
+      <div className="bg-outline h-6 w-px shrink-0" />
+
+      {/* Distance filter */}
+      {onDistanceChange && (
+        <>
+          <DistanceFilter
+            value={distanceKm ?? null}
+            onChange={onDistanceChange}
+            cityName={cityName ?? ""}
+          />
+          <div className="bg-outline h-6 w-px shrink-0" />
+        </>
+      )}
+
       {/* Happening Now toggle */}
       {onToggleHappeningNow && (
         <>
@@ -65,17 +95,6 @@ export function FilterBar({
           </button>
         );
       })}
-
-      <div className="bg-outline h-6 w-px shrink-0" />
-
-      {/* Date filter */}
-      <button
-        onClick={onDateFilterClick}
-        className="bg-surface-low text-on-surface-variant hover:bg-surface-mid inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors"
-      >
-        <Calendar className="h-3.5 w-3.5" strokeWidth={1.75} />
-        {dateLabel ?? t("dateFilter")}
-      </button>
     </div>
   );
 }

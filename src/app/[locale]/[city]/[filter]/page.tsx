@@ -4,49 +4,21 @@ import { getTranslations } from "next-intl/server";
 import { getCityBySlug, CITIES } from "@/lib/cities";
 import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 import { fetchEvents } from "@/lib/api";
-import { formatEventDate, formatEventTime } from "@/lib/types";
+import { formatEventDate, formatEventTime, type Event } from "@/lib/types";
 import { DiscoveryView } from "@/components/discovery/discovery-view";
+import { getPresetRange, type DatePresetKey } from "@/lib/date-filters";
 
 type Props = {
   params: Promise<{ locale: string; city: string; filter: string }>;
 };
 
 // Date-based filters
-const DATE_FILTERS: Record<
-  string,
-  { labelPl: string; labelEn: string; getRange: () => { from: string; to: string } }
-> = {
-  "this-weekend": {
-    labelPl: "W ten weekend",
-    labelEn: "This weekend",
-    getRange: () => {
-      const now = new Date();
-      const day = now.getDay();
-      const satOffset = day === 0 ? 6 : 6 - day;
-      const sat = new Date(now.getTime() + satOffset * 86400000);
-      const sun = new Date(sat.getTime() + 86400000);
-      return {
-        from: sat.toISOString().split("T")[0],
-        to: sun.toISOString().split("T")[0],
-      };
-    },
-  },
-  today: {
-    labelPl: "Dzisiaj",
-    labelEn: "Today",
-    getRange: () => {
-      const d = new Date().toISOString().split("T")[0];
-      return { from: d, to: d };
-    },
-  },
-  tomorrow: {
-    labelPl: "Jutro",
-    labelEn: "Tomorrow",
-    getRange: () => {
-      const d = new Date(Date.now() + 86400000).toISOString().split("T")[0];
-      return { from: d, to: d };
-    },
-  },
+const DATE_FILTERS: Record<DatePresetKey, { labelPl: string; labelEn: string }> = {
+  "this-weekend": { labelPl: "W ten weekend", labelEn: "This weekend" },
+  today: { labelPl: "Dzisiaj", labelEn: "Today" },
+  tomorrow: { labelPl: "Jutro", labelEn: "Tomorrow" },
+  "this-week": { labelPl: "W tym tygodniu", labelEn: "This week" },
+  "next-30-days": { labelPl: "30 dni", labelEn: "30 days" },
 };
 
 const CATEGORY_SLUGS = CATEGORIES.map((c) => c.slug);
@@ -55,7 +27,7 @@ function isCategory(filter: string): filter is CategorySlug {
   return CATEGORY_SLUGS.includes(filter as CategorySlug);
 }
 
-function isDateFilter(filter: string): boolean {
+function isDateFilter(filter: string): filter is DatePresetKey {
   return filter in DATE_FILTERS;
 }
 
@@ -134,24 +106,37 @@ export default async function CityFilterPage({ params }: Props) {
     notFound();
   }
 
-  let events;
+  let events: Event[];
   let initialCategories: CategorySlug[] | undefined;
+
+  let initialDateFilter:
+    | { from: string; to: string; label: string; preset: DatePresetKey }
+    | undefined;
 
   if (isCategory(filter)) {
     events = await fetchEvents({ city: citySlug, categories: [filter] });
     initialCategories = [filter];
-  } else {
-    const range = DATE_FILTERS[filter].getRange();
+  } else if (isDateFilter(filter)) {
+    const range = getPresetRange(filter);
     events = await fetchEvents({
       city: citySlug,
       dateFrom: range.from,
       dateTo: range.to,
     });
+    initialDateFilter = {
+      ...range,
+      label: locale === "pl" ? DATE_FILTERS[filter].labelPl : DATE_FILTERS[filter].labelEn,
+      preset: filter,
+    };
+  } else {
+    events = [];
   }
 
   const filterLabel = isCategory(filter)
     ? CATEGORIES.find((c) => c.slug === filter)?.labelPl
-    : DATE_FILTERS[filter]?.labelPl;
+    : isDateFilter(filter)
+      ? DATE_FILTERS[filter]?.labelPl
+      : undefined;
 
   return (
     <>
@@ -173,6 +158,7 @@ export default async function CityFilterPage({ params }: Props) {
         events={events}
         city={city}
         initialCategories={initialCategories}
+        initialDateFilter={initialDateFilter}
       />
     </>
   );

@@ -17,30 +17,30 @@ Implement the Web B2C-specific accessibility requirements on top of the shared a
 
 ### 1. Semantic HTML (§1.12)
 
-- [ ] P0 **Semantic HTML** — use correct heading hierarchy (`h1` > `h2` > `h3`) on SSR pages for screen readers and SEO
+- [x] P0 **Semantic HTML** — use correct heading hierarchy (`h1` > `h2` > `h3`) on SSR pages for screen readers and SEO
 
 ### 2. Image alt text (§1.12)
 
-- [ ] P0 **Event/venue images** — `alt={event.name}` or `alt={venue.name}` on all content images; placeholder images use `alt=""`
+- [x] P0 **Event/venue images** — `alt={event.name}` or `alt={venue.name}` on all content images; placeholder images use `alt=""`
 
 ### 3. Map / list toggle keyboard accessibility (§1.12)
 
-- [ ] P1 **Map ↔ List toggle** — List view serves as the accessible alternative to the map; ensure list items are fully keyboard-navigable
+- [x] P1 **Map ↔ List toggle** — List view serves as the accessible alternative to the map; ensure list items are fully keyboard-navigable
 
 ### 4. Search results announcements (§1.12)
 
-- [ ] P1 **Search results announcements** — `aria-live="polite"` region to announce result count changes (e.g., "12 events found")
+- [x] P1 **Search results announcements** — `aria-live="polite"` region to announce result count changes (e.g., "12 events found")
 
 ### 5. Skip-to-content link (§1.12)
 
-- [ ] P1 **Skip-to-content link** — hidden until focused, jumps past navigation to main content
+- [x] P1 **Skip-to-content link** — hidden until focused, jumps past navigation to main content
 
 ### 6. Design system a11y requirements (DESIGN.md §7.10)
 
-- [ ] P0 **Text contrast** — minimum 4.5:1 for normal text, 3:1 for large text (WCAG AA)
-- [ ] P0 **Focus indicators** — `2px solid outline` with `2px offset`, visible in both light and dark mode (DESIGN.md §7.10)
-- [ ] P1 **Reduced motion** — respect `prefers-reduced-motion`: collapse durations to `0ms`, disable transforms (DESIGN.md §7.7)
-- [ ] P1 **Color independence** — never use color alone to convey information; pair with icons, text, or patterns
+- [ ] P0 **Text contrast** — minimum 4.5:1 for normal text, 3:1 for large text (WCAG AA) — PARTIAL: no contrast audit exists in-repo; the CSS `--primary` value (`#6c3feb`) doesn't match DESIGN.md's `#4900cc`, and some light-colored category badges (e.g. family `#eab308`) paired with white text likely fail AA
+- [x] P0 **Focus indicators** — `2px solid outline` with `2px offset`, visible in both light and dark mode (DESIGN.md §7.10)
+- [ ] P1 **Reduced motion** — respect `prefers-reduced-motion`: collapse durations to `0ms`, disable transforms (DESIGN.md §7.7) — PARTIAL: the media query collapses animation/transition durations, but there's no rule disabling transforms
+- [x] P1 **Color independence** — never use color alone to convey information; pair with icons, text, or patterns
 
 ## Acceptance Criteria
 

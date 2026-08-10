@@ -19,38 +19,38 @@ Integrate error monitoring (Sentry) and product analytics (PostHog) into the Web
 
 ### 1. Sentry integration (§1.13)
 
-- [ ] P0 **Sentry integration** — configure `@sentry/nextjs` for error tracking
+- [x] P0 **Sentry integration** — configure `@sentry/nextjs` for error tracking
   - Capture client-side and server-side errors
   - Source maps upload during build for readable stack traces
   - Attach `correlationId` (from API response headers) to error reports
 
 ### 2. PostHog integration (§1.13)
 
-- [ ] P0 **PostHog integration** — configure `posthog-js` for product analytics
+- [ ] P0 **PostHog integration** — configure `posthog-js` for product analytics — PARTIAL: consent-gated init/shutdown works, and `page_view`, `event_detail_view`, `venue_profile_view`, `navigate_tap`, `ticket_link_tap`, `event_share`, `smart_banner_click`, and `map_view` (mobile FAB only) fire; `trackSearchPerformed`/`trackSearchZeroResults` exist in `analytics.ts` but are never called since search isn't wired to the UI (see task 1-02)
   - Initialize PostHog only after user grants analytics consent via cookie consent banner (see section 1.11)
   - Track key events: `page_view`, `map_view`, `event_detail_view`, `venue_profile_view`, `navigate_tap`, `ticket_link_tap`, `event_share`, `search_performed`, `search_zero_results`, `smart_banner_click`
 
 ### 3. Core Web Vitals targets (§1.14)
 
-- [ ] P0 **Core Web Vitals targets** (critical for SEO — Google uses CWV as a ranking signal):
+- [ ] P0 **Core Web Vitals targets** (critical for SEO — Google uses CWV as a ranking signal): — PARTIAL: metrics are captured and reported to PostHog, but there's no documented/verified budget against the specific LCP/INP/CLS thresholds
   - LCP (Largest Contentful Paint): < 2.5s
   - INP (Interaction to Next Paint): < 200ms
   - CLS (Cumulative Layout Shift): < 0.1
-- [ ] P0 **Page load targets:**
+- [ ] P0 **Page load targets:** — PARTIAL: TTFB is reported to PostHog via `onTTFB`, but there's no CI check or assertion for TTFB < 800ms or first-load JS < 150KB
   - SSR pages (event detail, venue profile, city listing): Time to First Byte (TTFB) < 800ms
   - JavaScript bundle size: < 150KB gzipped (first load)
 
 ### 4. Lighthouse CI (§1.14)
 
-- [ ] P1 **Lighthouse CI** — add Lighthouse audit to CI pipeline, fail build if performance score < 80
+- [x] P1 **Lighthouse CI** — add Lighthouse audit to CI pipeline, fail build if performance score < 80
 
 ### 5. Web Vitals monitoring (§1.14)
 
-- [ ] P1 **Web Vitals monitoring** — report CWV metrics to PostHog or a dedicated RUM (Real User Monitoring) endpoint
+- [x] P1 **Web Vitals monitoring** — report CWV metrics to PostHog or a dedicated RUM (Real User Monitoring) endpoint
 
 ### 6. Bundle analysis (§1.14)
 
-- [ ] P1 **Bundle analysis** — add `@next/bundle-analyzer` to CI:
+- [ ] P1 **Bundle analysis** — add `@next/bundle-analyzer` to CI: — PARTIAL: `@next/bundle-analyzer` is wired via `pnpm analyze`, but it isn't run in CI and there's no automated alert on the 150KB threshold
   - Generate bundle report on each build
   - Track bundle size trend — alert if first-load JS exceeds 150KB gzipped
 

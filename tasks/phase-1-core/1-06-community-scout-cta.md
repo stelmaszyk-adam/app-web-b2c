@@ -15,10 +15,10 @@ Surface the Community Scout program within the Web B2C read-only experience: sho
 
 ### 1. Community Scout CTA and Attribution
 
-- [ ] P0 **"Know about an event?" CTA** in page footer or sidebar on map/listing pages:
+- [ ] P0 **"Know about an event?" CTA** in page footer or sidebar on map/listing pages: — PARTIAL: `ScoutCta` renders on discovery views with tip-related copy, but its button links to a generic App Store URL only (no deep link to the tip form, no Play Store link like the other smart banners)
   - Smart banner: "Submit an event tip in the app" → app store link / deep link to tip form in mobile app
   - Matches existing pattern of directing interactive actions to mobile app
-- [ ] P0 **"Tipped by @username"** attribution on event detail pages for community-sourced events (read-only display, SSR)
+- [ ] P0 **"Tipped by @username"** attribution on event detail pages for community-sourced events (read-only display, SSR) — NOT DONE: `tippedBy` i18n keys exist but are unused; the `Event` type/`mapEvent` have no scout-username field and neither `EventCard` nor the event detail page render this attribution
 
 ## Design Reference
 

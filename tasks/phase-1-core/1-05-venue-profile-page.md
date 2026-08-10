@@ -17,13 +17,13 @@ Build the SSR venue profile page, which gives users a dedicated, indexable page 
 
 ### 1. Venue Profile Page
 
-- [ ] P0 Venue profile page (SSR for SEO):
+- [ ] P0 Venue profile page (SSR for SEO): — PARTIAL: SSR page has gallery/hero, name, category, description, follower count, upcoming events (with empty state), and an opening-hours table with "until late" and today highlighted. Missing: holiday/temporary-closure UI, and the "map" is a decorative SVG rather than a real map bound to the venue's coordinates
   - Photo gallery (grid or carousel; sourced from `venue_photos`, fallback to single `photo_url`)
   - Name, category, description, opening hours (including temporary closures, holiday hours, and "open until late" indicators when applicable)
   - Follower count
   - List of upcoming events
   - Address with map
-- [ ] P0 Smart banner: "Follow this venue in the app" -> app store link
+- [x] P0 Smart banner: "Follow this venue in the app" -> app store link
 
 ## Design Reference
 

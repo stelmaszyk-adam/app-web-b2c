@@ -15,6 +15,9 @@ interface EventMapProps {
   highlightedEventId?: string | null;
 }
 
+const PIN_SIZE = 48;
+const ICON_INSET = 12;
+
 function buildGeoJSON(events: Event[]): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
@@ -31,6 +34,71 @@ function buildGeoJSON(events: Event[]): GeoJSON.FeatureCollection {
   };
 }
 
+function loadImageElement(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load map icon: ${src}`));
+    img.src = src;
+  });
+}
+
+/** Compose a colored circular pin with the category SVG icon for MapLibre. */
+async function createCategoryPinBitmap(
+  mapIcon: string,
+  color: string,
+): Promise<ImageBitmap> {
+  const response = await fetch(mapIcon);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch map icon: ${mapIcon}`);
+  }
+
+  const svg = (await response.text()).replaceAll("currentColor", "#ffffff");
+  const blob = new Blob([svg], { type: "image/svg+xml" });
+  const objectUrl = URL.createObjectURL(blob);
+
+  try {
+    const icon = await loadImageElement(objectUrl);
+    const canvas = document.createElement("canvas");
+    canvas.width = PIN_SIZE;
+    canvas.height = PIN_SIZE;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("Could not create canvas context for map pin");
+    }
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(PIN_SIZE / 2, PIN_SIZE / 2, PIN_SIZE / 2 - 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    const iconSize = PIN_SIZE - ICON_INSET * 2;
+    ctx.drawImage(icon, ICON_INSET, ICON_INSET, iconSize, iconSize);
+
+    return createImageBitmap(canvas);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function addCategoryPinImages(map: maplibregl.Map): Promise<void> {
+  await Promise.all(
+    CATEGORIES.map(async (cat) => {
+      const imageId = `pin-${cat.slug}`;
+      if (map.hasImage(imageId)) return;
+
+      try {
+        const bitmap = await createCategoryPinBitmap(cat.mapIcon, cat.color);
+        if (!map.hasImage(imageId)) {
+          map.addImage(imageId, bitmap);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }),
+  );
+}
+
 const STADIA_KEY = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY ?? "";
 
 export function EventMap({
@@ -42,8 +110,13 @@ export function EventMap({
 }: EventMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const eventsRef = useRef(events);
+  const onEventHoverRef = useRef(onEventHover);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [mapReady, setMapReady] = useState(false);
+
+  eventsRef.current = events;
+  onEventHoverRef.current = onEventHover;
 
   const styleUrl = STADIA_KEY
     ? `https://tiles.stadiamaps.com/styles/alidade_smooth.json?api_key=${STADIA_KEY}`
@@ -56,6 +129,7 @@ export function EventMap({
     // If no Stadia Maps key, use fallback view
     if (!styleUrl) return;
 
+    let cancelled = false;
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: styleUrl,
@@ -66,168 +140,145 @@ export function EventMap({
     map.addControl(new maplibregl.NavigationControl(), "top-right");
 
     map.on("load", () => {
-      mapRef.current = map;
-      setMapReady(true);
+      void (async () => {
+        await addCategoryPinImages(map);
+        if (cancelled) return;
 
-      // Add images for each category pin
-      for (const cat of CATEGORIES) {
-        const canvas = document.createElement("canvas");
-        canvas.width = 24;
-        canvas.height = 24;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.fillStyle = cat.color;
-          ctx.beginPath();
-          ctx.arc(12, 12, 10, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 12px Inter, system-ui, sans-serif";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(cat.slug[0].toUpperCase(), 12, 12);
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          map.addImage(`pin-${cat.slug}`, {
-            width: canvas.width,
-            height: canvas.height,
-            data: imageData.data,
-          });
-        }
-      }
+        mapRef.current = map;
+        setMapReady(true);
 
-      // Add clustered source
-      map.addSource("events", {
-        type: "geojson",
-        data: buildGeoJSON(events),
-        cluster: true,
-        clusterMaxZoom: 14,
-        clusterRadius: 50,
-      });
-
-      // Cluster circles
-      map.addLayer({
-        id: "clusters",
-        type: "circle",
-        source: "events",
-        filter: ["has", "point_count"],
-        paint: {
-          "circle-color": [
-            "step",
-            ["get", "point_count"],
-            "#6c3feb",
-            10,
-            "#8c56f4",
-            30,
-            "#a97ef8",
-          ],
-          "circle-radius": [
-            "step",
-            ["get", "point_count"],
-            20,
-            10,
-            25,
-            30,
-            30,
-          ],
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#ffffff",
-        },
-      });
-
-      // Cluster count text
-      map.addLayer({
-        id: "cluster-count",
-        type: "symbol",
-        source: "events",
-        filter: ["has", "point_count"],
-        layout: {
-          "text-field": "{point_count_abbreviated}",
-          "text-font": ["Open Sans Bold"],
-          "text-size": 13,
-        },
-        paint: {
-          "text-color": "#ffffff",
-        },
-      });
-
-      // Unclustered pins
-      map.addLayer({
-        id: "unclustered-point",
-        type: "symbol",
-        source: "events",
-        filter: ["!", ["has", "point_count"]],
-        layout: {
-          "icon-image": [
-            "concat",
-            "pin-",
-            ["get", "category"],
-          ],
-          "icon-size": 1.2,
-          "icon-allow-overlap": true,
-          "text-field": [
-            "case",
-            ["==", ["get", "price"], 0],
-            "Free",
-            ["concat", ["to-string", ["get", "price"]], " zl"],
-          ],
-          "text-font": ["Open Sans Bold"],
-          "text-size": 10,
-          "text-offset": [0, 1.5],
-          "text-anchor": "top",
-        },
-        paint: {
-          "text-color": "#1c1a22",
-          "text-halo-color": "#ffffff",
-          "text-halo-width": 1.5,
-        },
-      });
-
-      // Click on cluster to zoom
-      map.on("click", "clusters", (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ["clusters"],
+        // Add clustered source
+        map.addSource("events", {
+          type: "geojson",
+          data: buildGeoJSON(eventsRef.current),
+          cluster: true,
+          clusterMaxZoom: 14,
+          clusterRadius: 50,
         });
-        if (!features.length) return;
-        const clusterId = features[0].properties.cluster_id;
-        const source = map.getSource("events") as maplibregl.GeoJSONSource;
-        source.getClusterExpansionZoom(clusterId).then((zoom) => {
-          const geometry = features[0].geometry;
-          if (geometry.type === "Point") {
-            map.easeTo({
-              center: geometry.coordinates as [number, number],
-              zoom,
-            });
+
+        // Cluster circles
+        map.addLayer({
+          id: "clusters",
+          type: "circle",
+          source: "events",
+          filter: ["has", "point_count"],
+          paint: {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#6c3feb",
+              10,
+              "#8c56f4",
+              30,
+              "#a97ef8",
+            ],
+            "circle-radius": [
+              "step",
+              ["get", "point_count"],
+              20,
+              10,
+              25,
+              30,
+              30,
+            ],
+            "circle-stroke-width": 2,
+            "circle-stroke-color": "#ffffff",
+          },
+        });
+
+        // Cluster count text
+        map.addLayer({
+          id: "cluster-count",
+          type: "symbol",
+          source: "events",
+          filter: ["has", "point_count"],
+          layout: {
+            "text-field": "{point_count_abbreviated}",
+            "text-font": ["Open Sans Bold"],
+            "text-size": 13,
+          },
+          paint: {
+            "text-color": "#ffffff",
+          },
+        });
+
+        // Unclustered pins
+        map.addLayer({
+          id: "unclustered-point",
+          type: "symbol",
+          source: "events",
+          filter: ["!", ["has", "point_count"]],
+          layout: {
+            "icon-image": ["concat", "pin-", ["get", "category"]],
+            "icon-size": 0.75,
+            "icon-allow-overlap": true,
+            "text-field": [
+              "case",
+              ["==", ["get", "price"], 0],
+              "Free",
+              ["concat", ["to-string", ["get", "price"]], " zl"],
+            ],
+            "text-font": ["Open Sans Bold"],
+            "text-size": 10,
+            "text-offset": [0, 1.5],
+            "text-anchor": "top",
+          },
+          paint: {
+            "text-color": "#1c1a22",
+            "text-halo-color": "#ffffff",
+            "text-halo-width": 1.5,
+          },
+        });
+
+        // Click on cluster to zoom
+        map.on("click", "clusters", (e) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: ["clusters"],
+          });
+          if (!features.length) return;
+          const clusterId = features[0].properties.cluster_id;
+          const source = map.getSource("events") as maplibregl.GeoJSONSource;
+          source.getClusterExpansionZoom(clusterId).then((zoom) => {
+            const geometry = features[0].geometry;
+            if (geometry.type === "Point") {
+              map.easeTo({
+                center: geometry.coordinates as [number, number],
+                zoom,
+              });
+            }
+          });
+        });
+
+        // Click on unclustered pin
+        map.on("click", "unclustered-point", (e) => {
+          if (!e.features?.length) return;
+          const props = e.features[0].properties;
+          const event = eventsRef.current.find((ev) => ev.id === props.id);
+          if (event) setSelectedEvent(event);
+        });
+
+        // Hover cursor changes
+        map.on("mouseenter", "clusters", () => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", "clusters", () => {
+          map.getCanvas().style.cursor = "";
+        });
+        map.on("mouseenter", "unclustered-point", (e) => {
+          map.getCanvas().style.cursor = "pointer";
+          if (e.features?.length) {
+            onEventHoverRef.current?.(e.features[0].properties.id);
           }
         });
-      });
-
-      // Click on unclustered pin
-      map.on("click", "unclustered-point", (e) => {
-        if (!e.features?.length) return;
-        const props = e.features[0].properties;
-        const event = events.find((ev) => ev.id === props.id);
-        if (event) setSelectedEvent(event);
-      });
-
-      // Hover cursor changes
-      map.on("mouseenter", "clusters", () => {
-        map.getCanvas().style.cursor = "pointer";
-      });
-      map.on("mouseleave", "clusters", () => {
-        map.getCanvas().style.cursor = "";
-      });
-      map.on("mouseenter", "unclustered-point", (e) => {
-        map.getCanvas().style.cursor = "pointer";
-        if (e.features?.length) {
-          onEventHover?.(e.features[0].properties.id);
-        }
-      });
-      map.on("mouseleave", "unclustered-point", () => {
-        map.getCanvas().style.cursor = "";
-        onEventHover?.(null);
-      });
+        map.on("mouseleave", "unclustered-point", () => {
+          map.getCanvas().style.cursor = "";
+          onEventHoverRef.current?.(null);
+        });
+      })();
     });
 
     return () => {
+      cancelled = true;
       mapRef.current = null;
       map.remove();
     };
@@ -319,9 +370,11 @@ function FallbackMap({
       {events.map((event) => {
         const cat = CATEGORY_MAP[event.category];
         const x =
-          ((event.venue.lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * 100;
+          ((event.venue.lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) *
+          100;
         const y =
-          ((bounds.maxLat - event.venue.lat) / (bounds.maxLat - bounds.minLat)) * 100;
+          ((bounds.maxLat - event.venue.lat) / (bounds.maxLat - bounds.minLat)) *
+          100;
         const isHighlighted = highlightedEventId === event.id;
 
         return (
@@ -343,11 +396,20 @@ function FallbackMap({
               className="flex items-center gap-1 rounded-full px-2 py-1 text-white shadow-md"
               style={{ backgroundColor: cat?.color ?? "#6b7280" }}
             >
-              {cat?.icon && (
-                <cat.icon className="h-3 w-3" strokeWidth={2} />
+              {cat?.mapIcon && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={cat.mapIcon}
+                  alt=""
+                  width={12}
+                  height={12}
+                  className="h-3 w-3 brightness-0 invert"
+                />
               )}
               <span className="text-[10px] font-semibold">
-                {event.price == null || event.price === 0 ? "Free" : `${event.price} zl`}
+                {event.price == null || event.price === 0
+                  ? "Free"
+                  : `${event.price} zl`}
               </span>
             </div>
             <div

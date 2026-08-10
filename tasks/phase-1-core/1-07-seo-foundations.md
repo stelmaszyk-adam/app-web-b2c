@@ -21,43 +21,43 @@ Design system: `documentation/designs/DESIGN.md` — OG image cards should follo
 
 ### 1. Sitemap generation (§1.3.1)
 
-- [ ] P0 **`sitemap.xml` generation** — dynamic, auto-updated sitemap covering:
+- [ ] P0 **`sitemap.xml` generation** — dynamic, auto-updated sitemap covering: — PARTIAL: `src/app/sitemap.ts` covers home, cities, categories, and date filters, but does NOT include event detail pages or venue profile pages, and there's no sub-sitemap split
   - City listing pages (`/poznan`, `/krakow`, etc.)
   - Category listing pages (`/poznan/music`, `/krakow/this-weekend`, etc.)
   - Event detail pages (with `lastmod` from `updated_at`)
   - Venue profile pages
   - Use Next.js `app/sitemap.ts` for automatic generation; split into sub-sitemaps if >50k URLs
-- [ ] P0 **Sitemap freshness:**
+- [ ] P0 **Sitemap freshness:** — PARTIAL: `revalidate = 3600` is set, but all `lastModified` values use the current timestamp (`now`) rather than an entity `updated_at`, and event pages aren't in the sitemap at all
   - Use Next.js ISR (Incremental Static Regeneration) for sitemap — revalidate every 1 hour
   - Set `<lastmod>` on event pages from `updated_at` timestamp
-- [ ] P1 **Submit sitemap to Google Search Console** after launch
+- [ ] P1 **Submit sitemap to Google Search Console** after launch — NOT DONE: operational post-launch step, no evidence of submission
 
 ### 2. Robots.txt (§1.3.1)
 
-- [ ] P0 **`robots.txt`** — allow all public pages, disallow internal/preview routes, reference sitemap URL
+- [x] P0 **`robots.txt`** — allow all public pages, disallow internal/preview routes, reference sitemap URL
 
 ### 3. Structured data / JSON-LD (§1.3.1)
 
-- [ ] P0 **Structured data / JSON-LD for events** — [Google Event rich results](https://developers.google.com/search/docs/appearance/structured-data/event):
+- [x] P0 **Structured data / JSON-LD for events** — [Google Event rich results](https://developers.google.com/search/docs/appearance/structured-data/event):
   - `Event` schema on every event detail page (`name`, `startDate`, `endDate`, `location`, `image`, `description`, `offers` if ticket URL exists)
   - `Place` schema on venue profile pages (`name`, `address`, `geo`)
   - Validate with Google Rich Results Test before launch
 
 ### 4. Canonical URLs (§1.3.1)
 
-- [ ] P0 **Canonical URLs** — `<link rel="canonical">` on every page:
+- [ ] P0 **Canonical URLs** — `<link rel="canonical">` on every page: — PARTIAL: canonical + `languages` present on city, filter, event, and venue pages with query params stripped, but missing on `/cookie-policy` and the locale layout's home metadata lacks a page-level canonical
   - Locale variants: canonical points to default locale (`/poznan/music`), `hreflang` handles alternates (coordinates with section 1.9; depends on 1-00 i18n for locale setup)
   - Query parameter pages (filters, pagination): canonical points to base URL without query params
   - Prevent duplicate content between `/poznan` and `/poznan?category=all`
 
 ### 5. Open Graph / social sharing meta tags (§1.6)
 
-- [ ] P0 Open Graph meta tags on every event page (SSR):
+- [x] P0 Open Graph meta tags on every event page (SSR):
   - `og:title` — event name
   - `og:description` — date + venue + short description
   - `og:image` — dynamically generated graphic (Cloudflare Worker / satori)
   - `og:url` — canonical event URL
-- [ ] P0 Dedicated URL for each event (deep link that opens app or website)
+- [x] P0 Dedicated URL for each event (deep link that opens app or website)
 
 ## Acceptance Criteria
 

@@ -17,7 +17,7 @@ Build the SSR event detail page, which is the primary SEO and social-sharing sur
 
 ### 1. Event Details Page
 
-- [ ] P0 Event details page (SSR for SEO + OG tags):
+- [x] P0 Event details page (SSR for SEO + OG tags):
   - Photo gallery (clickable thumbnails or carousel; sourced from `event_photos`, fallback to single `photo_url`)
   - Name, date, time, address
   - Description
@@ -25,18 +25,18 @@ Build the SSR event detail page, which is the primary SEO and social-sharing sur
   - CTA "Buy tickets" (deep link to external system)
   - CTA "Navigate" (link to Google Maps)
   - Source attribution for aggregated events
-- [ ] P0 "Share" button (copy link)
-- [ ] P0 **Dedicated URL for each event** (deep link that opens app or website)
-- [ ] P1 "Add to calendar" button (dropdown with options):
+- [x] P0 "Share" button (copy link)
+- [x] P0 **Dedicated URL for each event** (deep link that opens app or website)
+- [x] P1 "Add to calendar" button (dropdown with options):
   - Google Calendar (pre-filled link with event parameters)
   - Apple Calendar (.ics file download)
   - Outlook (.ics file download)
-- [ ] P0 Smart banner: "Follow this venue in the app" -> app store link
-- [ ] P0 Smart banner: "Save this event in the app" -> app store link
+- [x] P0 Smart banner: "Follow this venue in the app" -> app store link
+- [x] P0 Smart banner: "Save this event in the app" -> app store link
 
 ### 2. Recurring Event Display
 
-- [ ] P0 **Recurring event indicator** on event detail page:
+- [ ] P0 **Recurring event indicator** on event detail page: — NOT DONE: i18n keys (`partOfSeries`, `viewAllDates`, etc.) exist in messages, but the `Event` type/`mapEvent` have no recurrence fields and the event detail UI never renders a series badge or instance list
   - "Part of a weekly series" badge (or daily/monthly, based on recurrence type)
   - "View all dates" link -> list/accordion of all upcoming instances in the series
   - Each instance links to its own event detail page

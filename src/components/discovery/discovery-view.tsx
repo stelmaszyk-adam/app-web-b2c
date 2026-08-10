@@ -10,20 +10,34 @@ import { useCity } from "@/hooks/use-city";
 import { EventMap } from "@/components/map/event-map";
 import { NoEventsEmptyState } from "@/components/ui/empty-state";
 import { trackMapView } from "@/lib/analytics";
+import { fetchEvents } from "@/lib/api";
 import { FilterBar } from "./filter-bar";
 import { EventCard } from "./event-card";
-import { DatePicker } from "./date-picker";
+import { DatePicker, type DatePreset } from "./date-picker";
+import { getPresetRange } from "@/lib/date-filters";
+
+const DEFAULT_RADIUS_KM = 5;
+
+interface DateFilterState {
+  from: string;
+  to: string;
+  label: string;
+  preset: DatePreset;
+}
 
 interface DiscoveryViewProps {
   events: Event[];
   city: City;
   initialCategories?: CategorySlug[];
+  /** Pre-resolved date filter for SSR date-filter routes (e.g. /poznan/this-weekend). */
+  initialDateFilter?: DateFilterState;
 }
 
 export function DiscoveryView({
   events,
   city,
   initialCategories,
+  initialDateFilter,
 }: DiscoveryViewProps) {
   const t = useTranslations("discovery");
   const {
@@ -35,21 +49,35 @@ export function DiscoveryView({
   const [selectedCategories, setSelectedCategories] = useState<CategorySlug[]>(
     initialCategories ?? [],
   );
-  const [dateFilter, setDateFilter] = useState<{
-    from: string;
-    to: string;
-    label: string;
-  } | null>(null);
+  // Default landing experience curates the next 30 days unless a category or an
+  // explicit date route (SSR) already scopes the results.
+  const [dateFilter, setDateFilter] = useState<DateFilterState | null>(() => {
+    if (initialDateFilter) return initialDateFilter;
+    if (initialCategories && initialCategories.length > 0) return null;
+    const range = getPresetRange("next-30-days");
+    return { ...range, label: t("presetNext30Days"), preset: "next-30-days" };
+  });
   const [viewMode, setViewMode] = useState<"split" | "list">("split");
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showMobileMap, setShowMobileMap] = useState(false);
   const [happeningNow, setHappeningNow] = useState(false);
+  // null = no distance filter applied (events are already fetched within DEFAULT_RADIUS_KM).
+  const [radiusKm, setRadiusKm] = useState<number | null>(null);
+  const [eventList, setEventList] = useState(events);
+  const [isFetching, setIsFetching] = useState(false);
   const [liveAnnouncement, setLiveAnnouncement] = useState("");
   const prevCountRef = useRef<number | null>(null);
+  const fetchIdRef = useRef(0);
+
+  // Keep local list in sync when SSR props change (city / route navigation).
+  useEffect(() => {
+    setEventList(events);
+    setRadiusKm(null);
+  }, [events]);
 
   const filteredEvents = useMemo(() => {
-    let result = events;
+    let result = eventList;
 
     if (selectedCategories.length > 0) {
       result = result.filter((e) => selectedCategories.includes(e.category));
@@ -63,7 +91,7 @@ export function DiscoveryView({
     }
 
     return result;
-  }, [events, selectedCategories, dateFilter]);
+  }, [eventList, selectedCategories, dateFilter]);
 
   const toggleCategory = useCallback((slug: CategorySlug) => {
     setSelectedCategories((prev) =>
@@ -74,11 +102,36 @@ export function DiscoveryView({
   }, []);
 
   const handleDateApply = useCallback(
-    (from: string, to: string, label: string) => {
-      setDateFilter({ from, to, label });
+    (from: string, to: string, label: string, preset: DatePreset) => {
+      setDateFilter({ from, to, label, preset });
       setShowDatePicker(false);
     },
     [],
+  );
+
+  const handleDistanceChange = useCallback(
+    async (km: number | null) => {
+      setRadiusKm(km);
+      const fetchId = ++fetchIdRef.current;
+      setIsFetching(true);
+      try {
+        const next = await fetchEvents({
+          city: city.slug,
+          radius: km ?? DEFAULT_RADIUS_KM,
+          categories: selectedCategories.length > 0 ? selectedCategories : undefined,
+          dateFrom: dateFilter?.from,
+          dateTo: dateFilter?.to,
+        });
+        if (fetchId === fetchIdRef.current) {
+          setEventList(next);
+        }
+      } finally {
+        if (fetchId === fetchIdRef.current) {
+          setIsFetching(false);
+        }
+      }
+    },
+    [city.slug, selectedCategories, dateFilter?.from, dateFilter?.to],
   );
 
   // Announce result count changes to screen readers
@@ -91,12 +144,14 @@ export function DiscoveryView({
     prevCountRef.current = filteredEvents.length;
   }, [filteredEvents.length, t]);
 
-  const hasActiveFilters = selectedCategories.length > 0 || dateFilter !== null;
+  const hasActiveFilters =
+    selectedCategories.length > 0 || dateFilter !== null || radiusKm !== null;
 
   const clearAllFilters = useCallback(() => {
     setSelectedCategories([]);
     setDateFilter(null);
-  }, []);
+    void handleDistanceChange(null);
+  }, [handleDistanceChange]);
 
   return (
     <div className="flex flex-col">
@@ -152,20 +207,41 @@ export function DiscoveryView({
           dateLabel={dateFilter?.label}
           happeningNow={happeningNow}
           onToggleHappeningNow={() => setHappeningNow(!happeningNow)}
+          distanceKm={radiusKm}
+          onDistanceChange={handleDistanceChange}
+          cityName={city.namePl}
         />
       </div>
 
       {/* Content */}
-      <div className="mx-auto w-full max-w-[1440px] px-6 py-4 max-md:px-3">
+      <div
+        className={`mx-auto w-full max-w-[1440px] px-6 py-4 max-md:px-3 transition-opacity ${
+          isFetching ? "opacity-60" : "opacity-100"
+        }`}
+      >
         <h2 className="sr-only">{t("eventsListHeading")}</h2>
+
+        <div className="mb-4">
+          <p className="text-on-surface text-xl font-bold">
+            {t("resultsHeading", { count: filteredEvents.length, city: city.namePl })}
+          </p>
+          {(dateFilter || radiusKm !== null) && (
+            <p className="text-on-surface-variant mt-0.5 text-sm">
+              {dateFilter
+                ? t("resultsSubheading", {
+                    filter: dateFilter.label,
+                    radius: radiusKm ?? DEFAULT_RADIUS_KM,
+                  })
+                : t("resultsSubheadingRadiusOnly", { radius: radiusKm ?? DEFAULT_RADIUS_KM })}
+            </p>
+          )}
+        </div>
+
         {viewMode === "split" ? (
           <>
             {/* Desktop split view */}
             <div className="hidden gap-4 lg:flex" style={{ minHeight: "70vh" }}>
               <div className="flex w-[420px] shrink-0 flex-col gap-3 overflow-y-auto" style={{ maxHeight: "70vh" }}>
-                <p className="text-on-surface-variant text-xs font-medium">
-                  {filteredEvents.length} {t("eventsFound")}
-                </p>
                 {filteredEvents.length === 0 ? (
                   <NoEventsEmptyState
                     hasActiveFilters={hasActiveFilters}
@@ -205,9 +281,6 @@ export function DiscoveryView({
 
             {/* Mobile list */}
             <div className="lg:hidden">
-              <p className="text-on-surface-variant mb-3 text-xs font-medium">
-                {filteredEvents.length} {t("eventsFound")}
-              </p>
               {filteredEvents.length === 0 ? (
                 <div className="bg-surface-low flex flex-col items-center justify-center rounded-[var(--radius-lg)] py-12">
                   <p className="text-on-surface text-sm font-medium">
@@ -229,9 +302,6 @@ export function DiscoveryView({
           </>
         ) : (
           <div>
-            <p className="text-on-surface-variant mb-3 text-xs font-medium">
-              {filteredEvents.length} {t("eventsFound")}
-            </p>
             {filteredEvents.length === 0 ? (
               <div className="bg-surface-low flex flex-col items-center justify-center rounded-[var(--radius-lg)] py-12">
                 <p className="text-on-surface text-sm font-medium">
@@ -306,6 +376,9 @@ export function DiscoveryView({
             setShowDatePicker(false);
           }}
           onClose={() => setShowDatePicker(false)}
+          initialPreset={dateFilter?.preset ?? null}
+          initialFrom={dateFilter?.from}
+          initialTo={dateFilter?.to}
         />
       )}
     </div>

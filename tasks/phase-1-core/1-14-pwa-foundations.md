@@ -17,19 +17,19 @@ Lay the minimal Progressive Web App foundations for the Web B2C application: a w
 
 ### 1. Web app manifest (§1.17)
 
-- [ ] P1 **Web app manifest** (`manifest.json`) — app name, icons, theme color `#4900cc` (DESIGN.md `primary` token), display mode (`standalone`)
+- [x] P1 **Web app manifest** (`manifest.json`) — app name, icons, theme color `#4900cc` (DESIGN.md `primary` token), display mode (`standalone`)
 
 ### 2. Favicons and touch icons (§1.17)
 
-- [ ] P1 **Favicon and touch icons** — standard favicon set (16x16, 32x32, 192x192, 512x512) + Apple touch icon
+- [x] P1 **Favicon and touch icons** — standard favicon set (16x16, 32x32, 192x192, 512x512) + Apple touch icon
 
 ### 3. Theme color (§1.17)
 
-- [ ] P1 **Theme color** — `<meta name="theme-color">` set to `#4900cc` (DESIGN.md `primary` token), matching brand primary color (adapts to light/dark mode if supported)
+- [x] P1 **Theme color** — `<meta name="theme-color">` set to `#4900cc` (DESIGN.md `primary` token), matching brand primary color (adapts to light/dark mode if supported)
 
 ### Out of scope (§1.17)
 
-- [ ] CUT Service worker / offline caching — not needed for MVP (SSR pages don't benefit from SW caching)
+- [x] CUT Service worker / offline caching — not needed for MVP (SSR pages don't benefit from SW caching)
 
 ## Acceptance Criteria
 

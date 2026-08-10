@@ -15,18 +15,19 @@ Implement the primary discovery surface of the Web B2C application: an interacti
 
 ### 1. Map and Discovery Page
 
-- [ ] P0 Main page: map with event pins (MapLibre GL JS + Stadia Maps — see [ARCHITECTURE.md ADR #17](../../documentation/ARCHITECTURE.md#11-key-architectural-decisions-log))
-- [ ] P0 Pin clustering at high zoom-out
-- [ ] P0 Custom pin icons per unified category (same 12 categories as mobile — see [central roadmap](../../documentation/ROADMAP.md#unified-category-system))
-- [ ] P0 Category filter (multiselect)
-- [ ] P0 Date filter: calendar date-range picker (select start and end date) with quick-select presets (Today, Tomorrow, This weekend)
-- [ ] P0 City selection (same list as mobile)
-- [ ] P0 Map <-> List toggle
-- [ ] P0 Event mini-card on pin click (photo + name + time + venue)
-- [ ] P0 City listing pages with SSR (`/poznan`, `/krakow`, `/wroclaw`, etc.) — SEO from day one
-- [ ] P0 Category listing pages (`/poznan/music`, `/krakow/this-weekend`) — SEO
-- [ ] P1 Text search bar (event name / venue name)
-- [ ] P1 "Happening Now" filter
+- [x] P0 Main page: map with event pins (MapLibre GL JS + Stadia Maps — see [ARCHITECTURE.md ADR #17](../../documentation/ARCHITECTURE.md#11-key-architectural-decisions-log))
+- [x] P0 Pin clustering at high zoom-out
+- [x] P0 Custom pin icons per unified category (same 12 categories as mobile — see [central roadmap](../../documentation/ROADMAP.md#unified-category-system))
+- [x] P0 Category filter (multiselect)
+- [x] P0 Date filter: calendar date-range picker (select start and end date) with quick-select presets (Today, Tomorrow, This weekend)
+- [x] P0 Distance filter: 0.5 / 1 / 3 / 5 km presets (same values as mobile), applied client-side against the already-fetched (5 km default) event set using Haversine distance from the city center
+- [x] P0 City selection (same list as mobile)
+- [x] P0 Map <-> List toggle
+- [x] P0 Event mini-card on pin click (photo + name + time + venue)
+- [x] P0 City listing pages with SSR (`/poznan`, `/krakow`, `/wroclaw`, etc.) — SEO from day one
+- [x] P0 Category listing pages (`/poznan/music`, `/krakow/this-weekend`) — SEO
+- [ ] P1 Text search bar (event name / venue name) — PARTIAL: search inputs exist in `app-header.tsx` but are unbound (no state, no API `search` param usage)
+- [ ] P1 "Happening Now" filter — PARTIAL: toggle UI exists in `FilterBar`/`discovery-view.tsx` but doesn't actually filter `filteredEvents`
 
 ## Design Reference
 

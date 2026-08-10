@@ -371,6 +371,44 @@ body {
   }
 }
 
+/* Distance filter range slider */
+.distance-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+
+.distance-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: var(--primary);
+  border: 3px solid #ffffff;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.distance-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: var(--primary);
+  border: 3px solid #ffffff;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.distance-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: transparent;
+}
+
 /* Utility: hide scrollbar */
 .scrollbar-hide {
   -ms-overflow-style: none;

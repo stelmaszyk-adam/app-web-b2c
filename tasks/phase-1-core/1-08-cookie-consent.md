@@ -28,7 +28,7 @@ Implement a GDPR-compliant cookie consent system for the Web B2C application. No
 
 ### 1. Cookie consent banner (§1.11)
 
-- [ ] P0 **Cookie consent banner** on all Web B2C pages:
+- [x] P0 **Cookie consent banner** on all Web B2C pages:
   - Show on first visit (before any tracking fires)
   - Options: Accept all / Reject all / Manage preferences
   - Categories: Essential (always on), Analytics (PostHog), Marketing (if any future pixels)
@@ -37,18 +37,18 @@ Implement a GDPR-compliant cookie consent system for the Web B2C application. No
 
 ### 2. PostHog consent management (§1.11)
 
-- [ ] P0 **PostHog consent management:**
+- [x] P0 **PostHog consent management:**
   - Do NOT initialize PostHog until user grants analytics consent
   - If user rejects analytics: no PostHog scripts loaded, no events tracked
   - If user later changes preference (via settings/footer link): update PostHog state accordingly
 
 ### 3. Cookie policy page (§1.11)
 
-- [ ] P0 **Cookie policy page** (`/cookie-policy`) — lists all cookies/trackers used, their purpose, and retention period
+- [x] P0 **Cookie policy page** (`/cookie-policy`) — lists all cookies/trackers used, their purpose, and retention period
 
 ### 4. Footer link (§1.11)
 
-- [ ] P0 "Manage cookie preferences" link in footer (re-opens consent modal)
+- [x] P0 "Manage cookie preferences" link in footer (re-opens consent modal)
 
 ## Acceptance Criteria
 

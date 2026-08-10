@@ -15,15 +15,15 @@ Set up a lightweight, SSR-friendly typed API client for Web B2C using `openapi-t
 
 ### 1. API client setup
 
-- [ ] P0 Install `openapi-typescript` (dev dependency) and `openapi-fetch` (runtime dependency)
-- [ ] P0 Configure codegen script in `package.json`: `"api:generate": "openapi-typescript <spec-path> --output src/api/generated/schema.d.ts"`
-- [ ] P0 Create `src/api/client.ts` — configured `openapi-fetch` client typed against the generated schema, with `NEXT_PUBLIC_API_URL` base URL (per `documentation/ARCHITECTURE.md §4`)
-- [ ] P0 First codegen run: generate types from backend `docs/openapi.json` (URL or file mode)
-- [ ] P0 Add `src/api/generated/` to `.gitignore` (regenerated on demand, not committed)
+- [x] P0 Install `openapi-typescript` (dev dependency) and `openapi-fetch` (runtime dependency)
+- [x] P0 Configure codegen script in `package.json`: `"api:generate": "openapi-typescript <spec-path> --output src/api/generated/schema.d.ts"`
+- [x] P0 Create `src/api/client.ts` — configured `openapi-fetch` client typed against the generated schema, with `NEXT_PUBLIC_API_URL` base URL (per `documentation/ARCHITECTURE.md §4`)
+- [x] P0 First codegen run: generate types from backend `docs/openapi.json` (URL or file mode)
+- [x] P0 Add `src/api/generated/` to `.gitignore` (regenerated on demand, not committed)
 
 ### 2. Directory structure
 
-- [ ] P0 `src/api/` directory layout:
+- [x] P0 `src/api/` directory layout:
   - `src/api/client.ts` — configured `openapi-fetch` client
   - `src/api/generated/schema.d.ts` — auto-generated types from OpenAPI spec (not committed)
 

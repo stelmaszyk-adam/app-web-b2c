@@ -15,7 +15,7 @@ Implement the first-visit onboarding experience: a compliant browser geolocation
 
 ### 1. Browser Geolocation Flow
 
-- [ ] P0 **Browser geolocation flow:**
+- [ ] P0 **Browser geolocation flow:** — PARTIAL: no auto-prompt on load, "Use my location" triggers `navigator.geolocation` on click, and denial shows "Location unavailable — select your city" with the city picker (`use-city.tsx`). Missing: IP-based geolocation fallback (Cloudflare `cf-ipcountry`/GeoIP) and a link to browser site-settings instructions
   - Do NOT prompt for geolocation on first page load (browsers penalise unprompted requests)
   - Show "Use my location" button on map — triggers browser geolocation prompt on click
   - On denial / dismiss: fall back to IP-based geolocation (coarse city-level, e.g. via Cloudflare `cf-ipcountry` + GeoIP)
@@ -25,7 +25,7 @@ Implement the first-visit onboarding experience: a compliant browser geolocation
 
 ### 2. First-Visit Default State
 
-- [ ] P0 **First-visit default state:**
+- [ ] P0 **First-visit default state:** — PARTIAL: first visit opens the city picker (or falls back to a cookie/default city), and the cookie banner fires on first visit, but there's no IP-based city detection to center the map automatically
   - Map centers on detected city (from IP geolocation) with events loaded
   - If no city can be detected: show city picker overlay before loading map
   - Cookie consent banner fires immediately (per section 1.11)
@@ -34,7 +34,7 @@ Implement the first-visit onboarding experience: a compliant browser geolocation
 
 ### 3. City Selection Persistence
 
-- [ ] P1 **City selection persistence:**
+- [x] P1 **City selection persistence:**
   - Store selected city in localStorage
   - On return visit: load last selected city (skip geolocation prompt)
   - "Change city" option always visible in header/nav

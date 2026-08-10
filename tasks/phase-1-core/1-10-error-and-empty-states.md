@@ -17,29 +17,29 @@ Implement a complete set of error and empty states across the Web B2C applicatio
 
 ### 1. Error pages (§1.16)
 
-- [ ] P0 **404 page** — custom "Page not found" with link to homepage and search
-- [ ] P0 **500 / error page** — custom error page with "Try again" option and link to homepage
+- [x] P0 **404 page** — custom "Page not found" with link to homepage and search
+- [x] P0 **500 / error page** — custom error page with "Try again" option and link to homepage
 
 ### 2. Empty states (§1.16)
 
-- [ ] P0 **Empty state: no events found** — friendly message with illustration, suggest changing filters or city
-- [ ] P0 **Empty state: venue has no upcoming events** — message on venue profile page
+- [ ] P0 **Empty state: no events found** — friendly message with illustration, suggest changing filters or city — PARTIAL: the full illustrated empty state (`NoEventsEmptyState`) is only used in the desktop split view; mobile and list-only views fall back to plain text with no illustration or clear-filters/change-city actions
+- [x] P0 **Empty state: venue has no upcoming events** — message on venue profile page
 
 ### 3. Loading states (§1.16)
 
-- [ ] P0 **Loading states** — skeleton loaders for event cards, venue profile, and map pins during data fetching
+- [ ] P0 **Loading states** — skeleton loaders for event cards, venue profile, and map pins during data fetching — NOT DONE: skeleton components exist in `src/components/ui/skeletons.tsx` but are never imported/used anywhere, and there's no `loading.tsx` under `src/app`
 
 ### 4. API error handling (§1.16)
 
-- [ ] P1 **API error handling** — toast or inline error message when API calls fail (with retry option)
+- [ ] P1 **API error handling** — toast or inline error message when API calls fail (with retry option) — PARTIAL: `ErrorToastProvider`/toast UI (with retry) is mounted in the layout, but nothing ever calls `showError`/`useErrorToast` — `src/lib/api.ts` silently logs and returns empty results instead
 
 ### 5. Offline / network error (§1.16)
 
-- [ ] P1 **Offline/network error** — banner when network is unavailable ("Check your connection")
+- [ ] P1 **Offline/network error** — banner when network is unavailable ("Check your connection") — PARTIAL: `OfflineBanner` listens to online/offline events and shows the right copy, but it returns `null` in development and whenever `NEXT_PUBLIC_API_MOCKING=true`, so it's effectively only visible in production without mocking
 
 ### 6. 404 tracking (§1.16)
 
-- [ ] P1 **404 tracking** — track 404 pages in PostHog (`page_not_found` event with path) to detect broken links from external sources
+- [x] P1 **404 tracking** — track 404 pages in PostHog (`page_not_found` event with path) to detect broken links from external sources
 
 ## Acceptance Criteria
 

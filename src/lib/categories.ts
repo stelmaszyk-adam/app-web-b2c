@@ -33,6 +33,8 @@ export interface Category {
   labelPl: string;
   labelEn: string;
   icon: LucideIcon;
+  /** Static SVG used for MapLibre / fallback map pins (`public/icons/map`). */
+  mapIcon: string;
   color: string;
 }
 
@@ -42,6 +44,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Muzyka",
     labelEn: "Music",
     icon: Music,
+    mapIcon: "/icons/map/music-music.svg",
     color: "#6c3feb",
   },
   {
@@ -49,6 +52,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Życie nocne",
     labelEn: "Nightlife",
     icon: Moon,
+    mapIcon: "/icons/map/club-disc.svg",
     color: "#ec4899",
   },
   {
@@ -56,6 +60,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Sztuki sceniczne",
     labelEn: "Performing Arts",
     icon: Drama,
+    mapIcon: "/icons/map/theatre-drama.svg",
     color: "#2563eb",
   },
   {
@@ -63,6 +68,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Sztuka i kultura",
     labelEn: "Arts & Culture",
     icon: Palette,
+    mapIcon: "/icons/map/art-palette.svg",
     color: "#16a34a",
   },
   {
@@ -70,6 +76,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Sport i fitness",
     labelEn: "Sport & Fitness",
     icon: Dumbbell,
+    mapIcon: "/icons/map/sport-trophy.svg",
     color: "#0ea5e9",
   },
   {
@@ -77,6 +84,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Jedzenie i picie",
     labelEn: "Food & Drink",
     icon: Utensils,
+    mapIcon: "/icons/map/food-utensils.svg",
     color: "#e5484d",
   },
   {
@@ -84,6 +92,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Edukacja",
     labelEn: "Education",
     icon: GraduationCap,
+    mapIcon: "/icons/map/tech-cpu.svg",
     color: "#475569",
   },
   {
@@ -91,6 +100,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Biznes",
     labelEn: "Business",
     icon: Briefcase,
+    mapIcon: "/icons/map/film-film.svg",
     color: "#7c3aed",
   },
   {
@@ -98,6 +108,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Rodzina i dzieci",
     labelEn: "Family & Kids",
     icon: Baby,
+    mapIcon: "/icons/map/kids-baby.svg",
     color: "#eab308",
   },
   {
@@ -105,6 +116,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Festiwal",
     labelEn: "Festival",
     icon: Sparkles,
+    mapIcon: "/icons/map/festival-sparkles.svg",
     color: "#f97316",
   },
   {
@@ -112,6 +124,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Wellness",
     labelEn: "Wellness",
     icon: Leaf,
+    mapIcon: "/icons/map/wellness-leaf.svg",
     color: "#14b8a6",
   },
   {
@@ -119,6 +132,7 @@ export const CATEGORIES: Category[] = [
     labelPl: "Inne",
     labelEn: "Other",
     icon: MoreHorizontal,
+    mapIcon: "/icons/map/comedy-laugh.svg",
     color: "#6b7280",
   },
 ];

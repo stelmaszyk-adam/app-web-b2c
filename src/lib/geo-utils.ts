@@ -24,7 +24,8 @@ export function findNearestCity(
   return nearest;
 }
 
-function haversineKm(
+/** Great-circle distance between two lat/lng points, in km. */
+export function haversineKm(
   lat1: number,
   lon1: number,
   lat2: number,

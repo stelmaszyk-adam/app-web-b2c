@@ -9,8 +9,9 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "api:pull": "curl -sf http://localhost:3000/api/docs-json -o src/api/openapi.json && echo 'OpenAPI spec pulled from backend'",
-    "api:generate": "openapi-typescript src/api/openapi.json --output src/api/generated/schema.d.ts",
-    "api:sync": "pnpm api:pull && pnpm api:generate",
+    "api:generate": "openapi-typescript ../backend/docs/openapi.json --output src/api/generated/schema.d.ts",
+    "api:generate:local": "openapi-typescript src/api/openapi.json --output src/api/generated/schema.d.ts",
+    "api:sync": "pnpm api:pull && pnpm api:generate:local",
     "analyze": "ANALYZE=true next build",
     "prepare": "cd .. && husky web-b2c/.husky"
   },

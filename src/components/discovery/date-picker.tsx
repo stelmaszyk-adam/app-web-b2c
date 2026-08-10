@@ -3,80 +3,73 @@
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  getPresetRange,
+  toLocalISODate,
+  type DatePresetKey,
+} from "@/lib/date-filters";
 
-export type DatePreset =
-  | "today"
-  | "tomorrow"
-  | "this-weekend"
-  | "this-week"
-  | "custom";
+export type DatePreset = DatePresetKey | "custom";
 
 interface DatePickerProps {
-  onApply: (dateFrom: string, dateTo: string, label: string) => void;
+  onApply: (dateFrom: string, dateTo: string, label: string, preset: DatePreset) => void;
   onClear: () => void;
   onClose: () => void;
+  /** Currently active filter (if any), so reopening the picker reflects it. */
+  initialPreset?: DatePreset | null;
+  initialFrom?: string;
+  initialTo?: string;
 }
 
 function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-function formatISO(d: Date): string {
-  return d.toISOString().split("T")[0];
+function parseLocalISODate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
 }
 
-export function DatePicker({ onApply, onClear, onClose }: DatePickerProps) {
+export function DatePicker({
+  onApply,
+  onClear,
+  onClose,
+  initialPreset = null,
+  initialFrom,
+  initialTo,
+}: DatePickerProps) {
   const t = useTranslations("discovery");
   const today = startOfDay(new Date());
-  const [viewMonth, setViewMonth] = useState(today.getMonth());
-  const [viewYear, setViewYear] = useState(today.getFullYear());
-  const [rangeStart, setRangeStart] = useState<Date | null>(null);
-  const [rangeEnd, setRangeEnd] = useState<Date | null>(null);
-  const [activePreset, setActivePreset] = useState<DatePreset | null>(null);
+  const [viewMonth, setViewMonth] = useState(
+    initialFrom ? parseLocalISODate(initialFrom).getMonth() : today.getMonth(),
+  );
+  const [viewYear, setViewYear] = useState(
+    initialFrom ? parseLocalISODate(initialFrom).getFullYear() : today.getFullYear(),
+  );
+  const [rangeStart, setRangeStart] = useState<Date | null>(
+    initialFrom ? parseLocalISODate(initialFrom) : null,
+  );
+  const [rangeEnd, setRangeEnd] = useState<Date | null>(
+    initialTo ? parseLocalISODate(initialTo) : null,
+  );
+  const [activePreset, setActivePreset] = useState<DatePreset | null>(initialPreset);
 
   const presets: { key: DatePreset; label: string }[] = [
     { key: "today", label: t("presetToday") },
     { key: "tomorrow", label: t("presetTomorrow") },
     { key: "this-weekend", label: t("presetWeekend") },
     { key: "this-week", label: t("presetThisWeek") },
+    { key: "next-30-days", label: t("presetNext30Days") },
     { key: "custom", label: t("presetCustom") },
   ];
 
   function applyPreset(preset: DatePreset) {
     setActivePreset(preset);
-    const now = startOfDay(new Date());
-    let from: Date;
-    let to: Date;
+    if (preset === "custom") return;
 
-    switch (preset) {
-      case "today":
-        from = now;
-        to = now;
-        break;
-      case "tomorrow":
-        from = new Date(now.getTime() + 86400000);
-        to = from;
-        break;
-      case "this-weekend": {
-        const day = now.getDay();
-        const satOffset = day === 0 ? 6 : 6 - day;
-        from = new Date(now.getTime() + satOffset * 86400000);
-        to = new Date(from.getTime() + 86400000);
-        break;
-      }
-      case "this-week": {
-        from = now;
-        const dayOfWeek = now.getDay();
-        const sunOffset = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
-        to = new Date(now.getTime() + sunOffset * 86400000);
-        break;
-      }
-      case "custom":
-        return;
-    }
-
-    setRangeStart(from);
-    setRangeEnd(to);
+    const range = getPresetRange(preset);
+    setRangeStart(parseLocalISODate(range.from));
+    setRangeEnd(parseLocalISODate(range.to));
   }
 
   const daysInMonth = useMemo(() => {
@@ -123,14 +116,14 @@ export function DatePicker({ onApply, onClear, onClose }: DatePickerProps) {
   }
 
   function handleApply() {
-    if (rangeStart) {
-      const from = formatISO(rangeStart);
-      const to = rangeEnd ? formatISO(rangeEnd) : from;
+    if (rangeStart && activePreset) {
+      const from = toLocalISODate(rangeStart);
+      const to = rangeEnd ? toLocalISODate(rangeEnd) : from;
       const label =
-        activePreset && activePreset !== "custom"
+        activePreset !== "custom"
           ? presets.find((p) => p.key === activePreset)?.label ?? ""
           : `${from} – ${to}`;
-      onApply(from, to, label);
+      onApply(from, to, label, activePreset);
     }
   }
 
@@ -228,7 +221,7 @@ export function DatePicker({ onApply, onClear, onClose }: DatePickerProps) {
 
             return (
               <button
-                key={day.toISOString()}
+                key={toLocalISODate(day)}
                 onClick={() => !isPast && handleDayClick(day)}
                 disabled={isPast}
                 className={`flex h-9 items-center justify-center text-xs font-medium transition-colors ${

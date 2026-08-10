@@ -17,27 +17,27 @@ Build the responsive layout shell that wraps every page in the Web B2C applicati
 
 ### 1. Responsive Layout Shell
 
-- [ ] P0 **Mobile-first responsive layout** — all pages usable on viewports from 320px to 2560px:
+- [ ] P0 **Mobile-first responsive layout** — all pages usable on viewports from 320px to 2560px: — PARTIAL: mobile single-column and desktop 3-column grid work, but the tablet breakpoint (768–1023px) has no side-by-side map+list, and the desktop map view uses a horizontal `FilterBar`, not a persistent sidebar
   - Mobile (320-767px): single-column layout, full-width map, stacked cards
   - Tablet (768-1023px): two-column card grid, side-by-side map+list
   - Desktop (1024px+): three-column card grid, persistent sidebar filters on map view
-- [ ] P0 **Touch-friendly on mobile web** — tap targets >= 44x44px, adequate spacing between interactive elements
-- [ ] P0 **Map responsiveness** — map fills available viewport height; controls (zoom, filters) positioned for thumb reach on mobile
+- [ ] P0 **Touch-friendly on mobile web** — tap targets >= 44x44px, adequate spacing between interactive elements — PARTIAL: some controls are ≥44px, but several interactive elements (city selector, language pills, filter chips) use `h-8`/`h-9`/`h-10`
+- [x] P0 **Map responsiveness** — map fills available viewport height; controls (zoom, filters) positioned for thumb reach on mobile
 
 ### 2. AppHeader — "For Organizers" Cross-App Link
 
-- [ ] P0 **Header link — "For Organizers":**
+- [x] P0 **Header link — "For Organizers":**
   - Visible in the top navbar on all pages (desktop: text link; tablet/mobile: inside hamburger menu)
   - Links to `dashboard.wydarzka.dev` (opens in new tab, `target="_blank"` with `rel="noopener noreferrer"`)
   - Label: "For Organizers" (PL: "Dla Organizatorów") — uses i18n translation key
   - Positioned after main nav items but before language toggle
   - Visual treatment: tertiary/text style — should not compete with primary CTAs (e.g. no gradient, no button shape)
-- [ ] P0 **Footer link — "Organizer Dashboard":**
+- [x] P0 **Footer link — "Organizer Dashboard":**
   - In a "For Business" or "Organizers" section of the footer (alongside Terms, Privacy, Cookie Policy links)
   - Label: "Organizer Dashboard" (PL: "Panel Organizatora")
   - Same external link behavior (`dashboard.wydarzka.dev`, new tab)
   - Optionally include a short description: "Manage your venue, create events, and track analytics"
-- [ ] P1 **Contextual CTA on venue profile page:**
+- [x] P1 **Contextual CTA on venue profile page:**
   - Below the venue info section, show a subtle CTA: "Is this your venue? Claim it on the Organizer Dashboard"
   - Links to `dashboard.wydarzka.dev` (or a deep link to the venue claim flow if available)
   - Only shown as a static link (Web B2C has no auth, so no conditional logic based on ownership)

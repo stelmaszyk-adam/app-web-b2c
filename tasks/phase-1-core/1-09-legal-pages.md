@@ -19,19 +19,19 @@ Host the Terms of Service and Privacy Policy pages on the Web B2C application. A
 
 ### 1. Terms of Service page (§1.10)
 
-- [ ] P0 **Terms of Service page** (`/terms`) — static page with full ToS text, SSR for SEO
+- [ ] P0 **Terms of Service page** (`/terms`) — static page with full ToS text, SSR for SEO — NOT DONE: no `/terms` route exists
 
 ### 2. Privacy Policy page (§1.10)
 
-- [ ] P0 **Privacy Policy page** (`/privacy`) — static page with full Privacy Policy text, SSR for SEO
+- [ ] P0 **Privacy Policy page** (`/privacy`) — static page with full Privacy Policy text, SSR for SEO — NOT DONE: no `/privacy` route exists
 
 ### 3. Footer links (§1.10)
 
-- [ ] P0 **Footer links** to Terms of Service and Privacy Policy on all pages
+- [ ] P0 **Footer links** to Terms of Service and Privacy Policy on all pages — PARTIAL: footer has "Terms"/"Privacy" labels in the Legal section, but both currently link to `href="#"` since the pages don't exist yet
 
 ### 4. Version indicator (§1.10)
 
-- [ ] P0 **Version indicator** on ToS/Privacy Policy pages (e.g. "Last updated: April 1, 2026") — matches `CURRENT_TOS_VERSION` from backend
+- [ ] P0 **Version indicator** on ToS/Privacy Policy pages (e.g. "Last updated: April 1, 2026") — matches `CURRENT_TOS_VERSION` from backend — NOT DONE: no such pages exist yet, so no version indicator either
 
 ## Acceptance Criteria
 

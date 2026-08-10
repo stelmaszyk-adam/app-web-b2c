@@ -21,15 +21,15 @@ Define and implement a consistent image loading strategy across the Web B2C appl
 
 ### 1. Placeholder images (§1.5)
 
-- [ ] P1 Placeholder images when venues/events have no photos (branded fallback per category)
+- [x] P1 Placeholder images when venues/events have no photos (branded fallback per category)
 
 ### 2. Progressive image loading (§1.5)
 
-- [ ] P1 Progressive image loading (blur hash / LQIP from Cloudflare Images, Next.js `<Image>` blur placeholder)
+- [ ] P1 Progressive image loading (blur hash / LQIP from Cloudflare Images, Next.js `<Image>` blur placeholder) — PARTIAL: `placeholder="blur"` + `blurDataURL` are wired, but `getCategoryBlurDataUrl` generates a flat category-color SVG rather than a real Cloudflare blur hash/LQIP, and the R2/Images variant URLs (`getVariantUrl`) are defined but unused
 
 ### 3. Broken image fallbacks (§1.5)
 
-- [ ] P1 Broken image fallbacks (graceful fallback to placeholder on load error)
+- [x] P1 Broken image fallbacks (graceful fallback to placeholder on load error)
 
 ## Acceptance Criteria
 
