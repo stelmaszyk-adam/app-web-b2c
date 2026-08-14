@@ -15,12 +15,12 @@ Configure GitHub Actions workflows for continuous integration and continuous dep
 
 ### 1. CI/CD workflows
 
-- [ ] P0 **CI workflow** (triggered on: push to `develop`, push to `main`, PR to either): — PARTIAL: this repo's `.github/workflows/lighthouse.yml` only installs + builds + runs Lighthouse; it does not run `pnpm lint` or `pnpm type-check`. A fuller CI (lint/type-check/build) exists only in the parent monorepo's `.github/workflows/web-b2c-ci.yml`, not in this repo
+- [x] P0 **CI workflow** (triggered on: push to `develop`, push to `main`, PR to either): — DONE in parent monorepo `.github/workflows/web-b2c-ci.yml` (lint + type-check + build with pnpm cache). `web-b2c/.github/workflows/lighthouse.yml` additionally runs Lighthouse CI.
   - `pnpm install` (with dependency caching)
   - `pnpm lint` — ESLint
   - `pnpm type-check` — `tsc --noEmit`
   - `pnpm build` — verify build succeeds
-- [ ] P0 **CD workflow** — deploy to Cloudflare Pages / Vercel: — NOT DONE: no deploy workflow in this repo; the parent monorepo's deploy workflow is just a `TODO` placeholder
+- [ ] P0 **CD workflow** — deploy to Cloudflare Pages / Vercel: — NOT DONE: parent monorepo `.github/workflows/web-b2c-deploy.yml` builds but deploy steps are still `TODO` placeholders
   - `develop` branch -> preview environment
   - `main` branch -> production environment
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   MapPin,
@@ -9,11 +9,85 @@ import {
   ArrowUpRight,
   Menu,
   X,
+  LogOut,
+  User,
+  FileText,
+  Lightbulb,
 } from "lucide-react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useCity } from "@/hooks/use-city";
+import { useAuth, getUserInitials } from "@/lib/auth-context";
 
 const ORGANIZER_DASHBOARD_URL = "https://dashboard.wydarzka.dev";
+
+function UserAvatar({ initials }: { initials: string }) {
+  return (
+    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--brand-gradient)] text-xs font-bold text-white shadow-brand">
+      {initials}
+    </span>
+  );
+}
+
+function AvatarDropdown({ onClose }: { onClose: () => void }) {
+  const t = useTranslations("header");
+  const router = useRouter();
+  const { user, setUser } = useAuth();
+
+  async function handleSignOut() {
+    onClose();
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignore
+    }
+    setUser(null);
+    router.push("/");
+  }
+
+  if (!user) return null;
+
+  return (
+    <div className="bg-surface-high absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)]">
+      {/* User info */}
+      <div className="border-outline border-b px-4 py-3">
+        <p className="text-on-surface truncate text-sm font-medium">
+          {user.displayName ?? user.email.split("@")[0]}
+        </p>
+        <p className="text-on-surface-muted truncate text-xs">{user.email}</p>
+      </div>
+
+      {/* Links */}
+      <div className="py-1">
+        {[
+          { href: "/profile", icon: User, label: t("profile") },
+          { href: "/my-submissions", icon: FileText, label: t("mySubmissions") },
+          { href: "/my-tips", icon: Lightbulb, label: t("myTips") },
+        ].map(({ href, icon: Icon, label }) => (
+          <Link
+            key={href}
+            href={href}
+            onClick={onClose}
+            className="text-on-surface hover:bg-surface-low flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors"
+          >
+            <Icon className="h-4 w-4" strokeWidth={1.75} />
+            {label}
+          </Link>
+        ))}
+      </div>
+
+      {/* Sign out */}
+      <div className="border-outline border-t py-1">
+        <button
+          onClick={handleSignOut}
+          className="text-on-surface hover:bg-surface-low flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors"
+        >
+          <LogOut className="h-4 w-4" strokeWidth={1.75} />
+          {t("signOut")}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function AppHeader() {
   const t = useTranslations("header");
@@ -21,11 +95,28 @@ export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const { city, openCityPicker } = useCity();
+  const { user, setUser } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside.
+  useEffect(() => {
+    if (!avatarDropdownOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setAvatarDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [avatarDropdownOpen]);
 
   function switchLocale(newLocale: string) {
     router.replace(pathname, { locale: newLocale });
   }
+
+  const signInHref = pathname !== "/" ? `/login?next=${encodeURIComponent(pathname)}` : "/login";
 
   return (
     <header className="bg-surface-high/90 sticky top-0 z-30 border-b border-outline backdrop-blur-[20px]" role="banner">
@@ -44,7 +135,7 @@ export function AppHeader() {
           </span>
         </Link>
 
-        {/* City Selector — "Change city" always visible */}
+        {/* City Selector */}
         <button
           onClick={openCityPicker}
           className="bg-surface-high border-outline text-on-surface hover:bg-surface-low inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-sm font-medium transition-colors"
@@ -108,6 +199,30 @@ export function AppHeader() {
           </button>
         </div>
 
+        {/* Auth — desktop */}
+        {user ? (
+          <div ref={avatarRef} className="relative max-md:hidden">
+            <button
+              onClick={() => setAvatarDropdownOpen(!avatarDropdownOpen)}
+              aria-label={t("openAccountMenu")}
+              aria-expanded={avatarDropdownOpen}
+              className="hover:ring-2 hover:ring-[var(--primary)]/30 rounded-full transition-all"
+            >
+              <UserAvatar initials={getUserInitials(user)} />
+            </button>
+            {avatarDropdownOpen && (
+              <AvatarDropdown onClose={() => setAvatarDropdownOpen(false)} />
+            )}
+          </div>
+        ) : (
+          <Link
+            href={signInHref}
+            className="bg-primary text-on-primary hover:opacity-90 inline-flex h-9 items-center rounded-full px-5 text-sm font-medium transition-opacity max-md:hidden"
+          >
+            {t("signIn")}
+          </Link>
+        )}
+
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -125,6 +240,65 @@ export function AppHeader() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="bg-surface-high border-outline border-t px-4 pb-4 pt-2 md:hidden">
+          {/* Auth row — at top of mobile menu */}
+          {user ? (
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <UserAvatar initials={getUserInitials(user)} />
+                <div>
+                  <p className="text-on-surface text-sm font-medium">
+                    {user.displayName ?? user.email.split("@")[0]}
+                  </p>
+                  <p className="text-on-surface-muted text-xs">{user.email}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Link
+              href={signInHref}
+              onClick={() => setMobileMenuOpen(false)}
+              className="bg-primary text-on-primary mb-3 flex h-11 items-center justify-center rounded-full text-sm font-medium"
+            >
+              {t("signIn")}
+            </Link>
+          )}
+
+          {/* Auth links — mobile */}
+          {user && (
+            <div className="border-outline mb-3 border-b pb-3">
+              {[
+                { href: "/profile" as const, label: t("profile") },
+                { href: "/my-submissions" as const, label: t("mySubmissions") },
+                { href: "/my-tips" as const, label: t("myTips") },
+              ].map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-on-surface hover:text-primary flex h-11 items-center text-sm font-medium transition-colors"
+                >
+                  {label}
+                </Link>
+              ))}
+              <button
+                onClick={async () => {
+                  setMobileMenuOpen(false);
+                  try {
+                    await fetch("/api/auth/logout", { method: "POST" });
+                  } catch {
+                    // ignore
+                  }
+                  setUser(null);
+                  router.push("/");
+                }}
+                className="text-on-surface-variant hover:text-primary flex h-11 w-full items-center gap-1.5 text-sm font-medium transition-colors"
+              >
+                <LogOut className="h-4 w-4" strokeWidth={1.75} />
+                {t("signOut")}
+              </button>
+            </div>
+          )}
+
           {/* Mobile search */}
           <div className="bg-surface-low flex h-11 items-center gap-2.5 rounded-[var(--radius-lg)] px-3.5">
             <Search

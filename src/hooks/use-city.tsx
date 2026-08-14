@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
   useMemo,
   type ReactNode,
@@ -35,16 +36,6 @@ const CityContext = createContext<CityContextValue | null>(null);
 
 const DEFAULT_CITY = CITIES[0]; // Poznań
 
-function getInitialGeoStatus(): GeoStatus {
-  if (typeof window === "undefined") return "idle";
-  return isGeolocationDenied() ? "denied" : "idle";
-}
-
-function getInitialFirstVisit(): boolean {
-  if (typeof window === "undefined") return false;
-  return !getSavedCity();
-}
-
 interface CityProviderProps {
   children: ReactNode;
 }
@@ -60,10 +51,18 @@ export function CityProvider({ children }: CityProviderProps) {
     [citySlug],
   );
 
-  const [geoStatus, setGeoStatus] = useState<GeoStatus>(getInitialGeoStatus);
-  const [isFirstVisit, setIsFirstVisit] = useState(getInitialFirstVisit);
-  // Show city picker automatically on first visit (no saved city)
-  const [showCityPicker, setShowCityPicker] = useState(isFirstVisit);
+  // Always start as false on both server and client to avoid hydration mismatch.
+  // The effect below updates these after mount when localStorage is available.
+  const [geoStatus, setGeoStatus] = useState<GeoStatus>("idle");
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [showCityPicker, setShowCityPicker] = useState(false);
+
+  useEffect(() => {
+    const firstVisit = !getSavedCity();
+    setIsFirstVisit(firstVisit);
+    setShowCityPicker(firstVisit);
+    if (isGeolocationDenied()) setGeoStatus("denied");
+  }, []);
 
   const selectCity = useCallback(
     (slug: string) => {

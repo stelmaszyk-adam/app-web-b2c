@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -12,6 +13,9 @@ import { ErrorToastProvider } from "@/components/ui/error-toast";
 import { OfflineBanner } from "@/components/ui/offline-banner";
 import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { WebVitalsReporter } from "@/components/analytics/web-vitals-reporter";
+import { AuthProvider } from "@/lib/auth-context";
+import { COOKIE_ACCESS_TOKEN, decodeTokenUser } from "@/lib/auth-cookies";
+import { TosReconsentWrapper } from "@/components/auth/tos-reconsent-wrapper";
 
 type Props = {
   children: React.ReactNode;
@@ -49,24 +53,32 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   const messages = await getMessages();
 
+  // Read auth state server-side so AppHeader renders with correct initial state.
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(COOKIE_ACCESS_TOKEN)?.value;
+  const initialUser = decodeTokenUser(accessToken);
+
   return (
     <NextIntlClientProvider messages={messages}>
-      <CityProvider>
-        <CookieConsentProvider>
-          <PostHogProvider />
-          <WebVitalsReporter />
-          <ErrorToastProvider>
-            <a href="#main-content" className="skip-to-content">
-              {locale === "pl" ? "Przejdź do treści" : "Skip to content"}
-            </a>
-            <OfflineBanner />
-            <AppHeader />
-            <main id="main-content" className="flex-1">{children}</main>
-            <AppFooter />
-            <CityPickerOverlay />
-          </ErrorToastProvider>
-        </CookieConsentProvider>
-      </CityProvider>
+      <AuthProvider initialUser={initialUser}>
+        <CityProvider>
+          <CookieConsentProvider>
+            <PostHogProvider />
+            <WebVitalsReporter />
+            <ErrorToastProvider>
+              <a href="#main-content" className="skip-to-content">
+                {locale === "pl" ? "Przejdź do treści" : "Skip to content"}
+              </a>
+              <OfflineBanner />
+              <AppHeader />
+              <main id="main-content" className="flex-1">{children}</main>
+              <AppFooter />
+              <CityPickerOverlay />
+              <TosReconsentWrapper />
+            </ErrorToastProvider>
+          </CookieConsentProvider>
+        </CityProvider>
+      </AuthProvider>
     </NextIntlClientProvider>
   );
 }
