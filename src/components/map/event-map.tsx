@@ -115,8 +115,10 @@ export function EventMap({
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
-  eventsRef.current = events;
-  onEventHoverRef.current = onEventHover;
+  useEffect(() => {
+    eventsRef.current = events;
+    onEventHoverRef.current = onEventHover;
+  });
 
   const styleUrl = STADIA_KEY
     ? `https://tiles.stadiamaps.com/styles/alidade_smooth.json?api_key=${STADIA_KEY}`

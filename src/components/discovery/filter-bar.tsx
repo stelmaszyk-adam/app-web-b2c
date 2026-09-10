@@ -35,7 +35,7 @@ export function FilterBar({
       {/* Date filter */}
       <button
         onClick={onDateFilterClick}
-        className="bg-surface-low text-on-surface-variant hover:bg-surface-mid inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors"
+        className="bg-surface-low text-on-surface-variant hover:bg-surface-mid inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors"
       >
         <Calendar className="h-3.5 w-3.5" strokeWidth={1.75} />
         {dateLabel ?? t("dateFilter")}
@@ -61,7 +61,7 @@ export function FilterBar({
           <button
             onClick={onToggleHappeningNow}
             aria-pressed={happeningNow}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+            className={`inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
               happeningNow
                 ? "bg-live-red text-white"
                 : "bg-surface-low text-on-surface-variant hover:bg-surface-mid"
@@ -83,7 +83,7 @@ export function FilterBar({
             key={cat.slug}
             onClick={() => onToggleCategory(cat.slug)}
             aria-pressed={isSelected}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+            className={`inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
               isSelected
                 ? "text-white"
                 : "bg-surface-low text-on-surface-variant hover:bg-surface-mid"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Navigation, X } from "lucide-react";
 
@@ -21,11 +21,10 @@ export function DistanceFilter({ value, onChange, cityName }: DistanceFilterProp
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(value ?? MIN_KM);
 
-  useEffect(() => {
-    if (open) {
-      setDraft(value ?? MIN_KM);
-    }
-  }, [open, value]);
+  function handleOpen() {
+    setDraft(value ?? MIN_KM);
+    setOpen(true);
+  }
 
   function handleApply() {
     onChange(draft);
@@ -41,11 +40,11 @@ export function DistanceFilter({ value, onChange, cityName }: DistanceFilterProp
     <div className="relative shrink-0">
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={handleOpen}
         aria-pressed={value !== null}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+        className={`inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
           value !== null
             ? "bg-primary text-white"
             : "bg-surface-low text-on-surface-variant hover:bg-surface-mid"

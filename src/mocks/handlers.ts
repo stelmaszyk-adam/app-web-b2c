@@ -81,6 +81,37 @@ export const handlers = [
     return HttpResponse.json({ data: null });
   }),
 
+  http.post(`${BASE_URL}/events/user-submit`, async ({ request }) => {
+    const body = await request.json() as Record<string, unknown>;
+    if (!body.name || !body.venue_id || !body.start_time || !body.category) {
+      return HttpResponse.json(
+        { statusCode: 422, error: "VALIDATION_ERROR", message: "Missing required fields" },
+        { status: 422 },
+      );
+    }
+    return new HttpResponse(null, { status: 201 });
+  }),
+
+  http.get(`${BASE_URL}/venues`, ({ request }) => {
+    const url = new URL(request.url);
+    const lat = parseFloat(url.searchParams.get("lat") ?? "0");
+    const lng = parseFloat(url.searchParams.get("lng") ?? "0");
+    const filtered = lat || lng
+      ? MOCK_VENUES.filter((v) => Math.abs(v.lat - lat) < 1 && Math.abs(v.lng - lng) < 1)
+      : MOCK_VENUES;
+    return HttpResponse.json({
+      data: filtered.map((v) => ({
+        id: v.id,
+        name: v.name,
+        address: v.address,
+        lat: v.lat,
+        lng: v.lng,
+        category: v.category,
+      })),
+      meta: { nextCursor: null, hasMore: false, total: filtered.length },
+    });
+  }),
+
   http.post(`${BASE_URL}/auth/tos/accept`, () => {
     return HttpResponse.json({ data: null });
   }),

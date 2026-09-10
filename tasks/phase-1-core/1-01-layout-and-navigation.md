@@ -17,11 +17,11 @@ Build the responsive layout shell that wraps every page in the Web B2C applicati
 
 ### 1. Responsive Layout Shell
 
-- [ ] P0 **Mobile-first responsive layout** — all pages usable on viewports from 320px to 2560px: — PARTIAL: mobile single-column and desktop 3-column grid work, but the tablet breakpoint (768–1023px) has no side-by-side map+list, and the desktop map view uses a horizontal `FilterBar`, not a persistent sidebar
+- [x] P0 **Mobile-first responsive layout** — all pages usable on viewports from 320px to 2560px:
   - Mobile (320-767px): single-column layout, full-width map, stacked cards
   - Tablet (768-1023px): two-column card grid, side-by-side map+list
   - Desktop (1024px+): three-column card grid, persistent sidebar filters on map view
-- [ ] P0 **Touch-friendly on mobile web** — tap targets >= 44x44px, adequate spacing between interactive elements — PARTIAL: some controls are ≥44px, but several interactive elements (city selector, language pills, filter chips) use `h-8`/`h-9`/`h-10`
+- [x] P0 **Touch-friendly on mobile web** — tap targets >= 44x44px, adequate spacing between interactive elements
 - [x] P0 **Map responsiveness** — map fills available viewport height; controls (zoom, filters) positioned for thumb reach on mobile
 
 ### 2. AppHeader — "For Organizers" Cross-App Link

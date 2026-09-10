@@ -18,6 +18,7 @@ import {
   setGeolocationDenied,
 } from "@/lib/city-store";
 import { findNearestCity } from "@/lib/geo-utils";
+import { detectCityFromIp } from "@/lib/ip-city";
 
 type GeoStatus = "idle" | "prompting" | "granted" | "denied" | "unavailable";
 
@@ -58,10 +59,34 @@ export function CityProvider({ children }: CityProviderProps) {
   const [showCityPicker, setShowCityPicker] = useState(false);
 
   useEffect(() => {
+    // Reads localStorage — unavailable on server, must run after mount to avoid hydration mismatch.
     const firstVisit = !getSavedCity();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsFirstVisit(firstVisit);
-    setShowCityPicker(firstVisit);
     if (isGeolocationDenied()) setGeoStatus("denied");
+
+    if (!firstVisit) return;
+
+    // On first visit, try IP-based geolocation before showing the city picker.
+    // If a city is detected the user is navigated there automatically; only fall
+    // back to the picker when IP geo is unavailable.
+    let cancelled = false;
+    void detectCityFromIp().then((slug) => {
+      if (cancelled) return;
+      if (slug) {
+        saveCity(slug);
+        setIsFirstVisit(false);
+        router.push(`/${slug}`);
+      } else {
+        setShowCityPicker(true);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // router is stable in Next.js; including it would cause an infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectCity = useCallback(
@@ -80,7 +105,13 @@ export function CityProvider({ children }: CityProviderProps) {
   const requestGeolocation = useCallback(() => {
     if (!navigator.geolocation) {
       setGeoStatus("unavailable");
-      setShowCityPicker(true);
+      void detectCityFromIp().then((slug) => {
+        if (slug) {
+          selectCity(slug);
+        } else {
+          setShowCityPicker(true);
+        }
+      });
       return;
     }
 
@@ -102,7 +133,14 @@ export function CityProvider({ children }: CityProviderProps) {
       () => {
         setGeoStatus("denied");
         setGeolocationDenied();
-        setShowCityPicker(true);
+        // Try IP-based geolocation before falling back to the city picker
+        void detectCityFromIp().then((slug) => {
+          if (slug) {
+            selectCity(slug);
+          } else {
+            setShowCityPicker(true);
+          }
+        });
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
     );

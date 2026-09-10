@@ -2,9 +2,9 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Map as MapIcon, List, MapPin, X, Locate, Sparkles, ChevronRight } from "lucide-react";
+import { Map as MapIcon, List, MapPin, X, Locate, Sparkles, ChevronRight, Calendar, Flame } from "lucide-react";
 import type { Event } from "@/lib/types";
-import type { CategorySlug } from "@/lib/categories";
+import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 import type { City } from "@/lib/cities";
 import { useCity } from "@/hooks/use-city";
 import { EventMap } from "@/components/map/event-map";
@@ -12,6 +12,7 @@ import { NoEventsEmptyState } from "@/components/ui/empty-state";
 import { trackMapView } from "@/lib/analytics";
 import { fetchEvents } from "@/lib/api";
 import { FilterBar } from "./filter-bar";
+import { DistanceFilter } from "./distance-filter";
 import { EventCard } from "./event-card";
 import { DatePicker, type DatePreset } from "./date-picker";
 import { getPresetRange } from "@/lib/date-filters";
@@ -31,6 +32,8 @@ interface DiscoveryViewProps {
   initialCategories?: CategorySlug[];
   /** Pre-resolved date filter for SSR date-filter routes (e.g. /poznan/this-weekend). */
   initialDateFilter?: DateFilterState;
+  /** Active text search query from URL ?q= param. */
+  initialSearch?: string;
 }
 
 export function DiscoveryView({
@@ -38,6 +41,7 @@ export function DiscoveryView({
   city,
   initialCategories,
   initialDateFilter,
+  initialSearch,
 }: DiscoveryViewProps) {
   const t = useTranslations("discovery");
   const {
@@ -69,9 +73,9 @@ export function DiscoveryView({
   const [liveAnnouncement, setLiveAnnouncement] = useState("");
   const prevCountRef = useRef<number | null>(null);
   const fetchIdRef = useRef(0);
-
   // Keep local list in sync when SSR props change (city / route navigation).
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEventList(events);
     setRadiusKm(null);
   }, [events]);
@@ -83,7 +87,10 @@ export function DiscoveryView({
       result = result.filter((e) => selectedCategories.includes(e.category));
     }
 
-    if (dateFilter) {
+    if (happeningNow) {
+      const now = new Date().toISOString();
+      result = result.filter((e) => e.startTime <= now && e.endTime >= now);
+    } else if (dateFilter) {
       result = result.filter((e) => {
         const eventDate = e.startTime.split("T")[0];
         return eventDate >= dateFilter.from && eventDate <= dateFilter.to;
@@ -91,7 +98,7 @@ export function DiscoveryView({
     }
 
     return result;
-  }, [eventList, selectedCategories, dateFilter]);
+  }, [eventList, selectedCategories, dateFilter, happeningNow]);
 
   const toggleCategory = useCallback((slug: CategorySlug) => {
     setSelectedCategories((prev) =>
@@ -101,9 +108,18 @@ export function DiscoveryView({
     );
   }, []);
 
+  const handleToggleHappeningNow = useCallback(() => {
+    if (!happeningNow) {
+      // Turning on: happeningNow and dateFilter are mutually exclusive
+      setDateFilter(null);
+    }
+    setHappeningNow((prev) => !prev);
+  }, [happeningNow]);
+
   const handleDateApply = useCallback(
     (from: string, to: string, label: string, preset: DatePreset) => {
       setDateFilter({ from, to, label, preset });
+      setHappeningNow(false);
       setShowDatePicker(false);
     },
     [],
@@ -145,11 +161,12 @@ export function DiscoveryView({
   }, [filteredEvents.length, t]);
 
   const hasActiveFilters =
-    selectedCategories.length > 0 || dateFilter !== null || radiusKm !== null;
+    selectedCategories.length > 0 || dateFilter !== null || radiusKm !== null || happeningNow;
 
   const clearAllFilters = useCallback(() => {
     setSelectedCategories([]);
     setDateFilter(null);
+    setHappeningNow(false);
     void handleDistanceChange(null);
   }, [handleDistanceChange]);
 
@@ -198,15 +215,15 @@ export function DiscoveryView({
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="mx-auto w-full max-w-[1440px] px-6 max-md:px-3">
+      {/* Filters — hidden at lg+ in split/map mode (sidebar takes over) */}
+      <div className={`mx-auto w-full max-w-[1440px] px-6 max-md:px-3 ${viewMode === "split" ? "lg:hidden" : ""}`}>
         <FilterBar
           selectedCategories={selectedCategories}
           onToggleCategory={toggleCategory}
           onDateFilterClick={() => setShowDatePicker(true)}
           dateLabel={dateFilter?.label}
           happeningNow={happeningNow}
-          onToggleHappeningNow={() => setHappeningNow(!happeningNow)}
+          onToggleHappeningNow={handleToggleHappeningNow}
           distanceKm={radiusKm}
           onDistanceChange={handleDistanceChange}
           cityName={city.namePl}
@@ -225,7 +242,12 @@ export function DiscoveryView({
           <p className="text-on-surface text-xl font-bold">
             {t("resultsHeading", { count: filteredEvents.length, city: city.namePl })}
           </p>
-          {(dateFilter || radiusKm !== null) && (
+          {initialSearch && (
+            <p className="text-on-surface-variant mt-0.5 text-sm">
+              {t("searchResultsFor", { query: initialSearch })}
+            </p>
+          )}
+          {!happeningNow && (dateFilter || radiusKm !== null) && (
             <p className="text-on-surface-variant mt-0.5 text-sm">
               {dateFilter
                 ? t("resultsSubheading", {
@@ -239,9 +261,28 @@ export function DiscoveryView({
 
         {viewMode === "split" ? (
           <>
-            {/* Desktop split view */}
-            <div className="hidden gap-4 lg:flex" style={{ minHeight: "70vh" }}>
-              <div className="flex w-[420px] shrink-0 flex-col gap-3 overflow-y-auto" style={{ maxHeight: "70vh" }}>
+            {/* md+: side-by-side map+list; lg+: also shows filter sidebar */}
+            <div className="hidden gap-4 md:flex" style={{ minHeight: "70vh" }}>
+              {/* Filter sidebar — lg+ only */}
+              <div className="hidden w-52 shrink-0 flex-col overflow-y-auto lg:flex" style={{ maxHeight: "70vh" }}>
+                <FilterSidebar
+                  selectedCategories={selectedCategories}
+                  onToggleCategory={toggleCategory}
+                  onDateFilterClick={() => setShowDatePicker(true)}
+                  dateLabel={dateFilter?.label}
+                  happeningNow={happeningNow}
+                  onToggleHappeningNow={handleToggleHappeningNow}
+                  distanceKm={radiusKm}
+                  onDistanceChange={handleDistanceChange}
+                  cityName={city.namePl}
+                />
+              </div>
+
+              {/* Event list */}
+              <div
+                className="flex w-[260px] shrink-0 flex-col gap-3 overflow-y-auto lg:w-[320px]"
+                style={{ maxHeight: "70vh" }}
+              >
                 {filteredEvents.length === 0 ? (
                   <NoEventsEmptyState
                     hasActiveFilters={hasActiveFilters}
@@ -261,6 +302,8 @@ export function DiscoveryView({
                 )}
                 <ScoutCta />
               </div>
+
+              {/* Map */}
               <div className="sticky top-20 flex-1 overflow-hidden rounded-[var(--radius-lg)]">
                 <div className="relative h-full">
                   <EventMap
@@ -279,8 +322,8 @@ export function DiscoveryView({
               </div>
             </div>
 
-            {/* Mobile list */}
-            <div className="lg:hidden">
+            {/* Mobile (<md): stacked list */}
+            <div className="md:hidden">
               {filteredEvents.length === 0 ? (
                 <div className="bg-surface-low flex flex-col items-center justify-center rounded-[var(--radius-lg)] py-12">
                   <p className="text-on-surface text-sm font-medium">
@@ -385,6 +428,94 @@ export function DiscoveryView({
   );
 }
 
+interface FilterSidebarProps {
+  selectedCategories: CategorySlug[];
+  onToggleCategory: (slug: CategorySlug) => void;
+  onDateFilterClick: () => void;
+  dateLabel?: string;
+  happeningNow?: boolean;
+  onToggleHappeningNow?: () => void;
+  distanceKm?: number | null;
+  onDistanceChange?: (km: number | null) => void;
+  cityName?: string;
+}
+
+function FilterSidebar({
+  selectedCategories,
+  onToggleCategory,
+  onDateFilterClick,
+  dateLabel,
+  happeningNow,
+  onToggleHappeningNow,
+  distanceKm,
+  onDistanceChange,
+  cityName,
+}: FilterSidebarProps) {
+  const t = useTranslations("discovery");
+
+  return (
+    <nav aria-label={t("filterCategories")} className="flex flex-col gap-1 pr-1">
+      <button
+        onClick={onDateFilterClick}
+        className="bg-surface-low text-on-surface-variant hover:bg-surface-mid flex min-h-[44px] w-full items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-left text-sm font-medium transition-colors"
+      >
+        <Calendar className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+        <span className="truncate">{dateLabel ?? t("dateFilter")}</span>
+      </button>
+
+      {onToggleHappeningNow && (
+        <button
+          onClick={onToggleHappeningNow}
+          aria-pressed={happeningNow}
+          className={`flex min-h-[44px] w-full items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-left text-sm font-medium transition-colors ${
+            happeningNow
+              ? "bg-live-red text-white"
+              : "bg-surface-low text-on-surface-variant hover:bg-surface-mid"
+          }`}
+        >
+          <Flame className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+          {t("happeningNow")}
+        </button>
+      )}
+
+      {onDistanceChange && (
+        <DistanceFilter
+          value={distanceKm ?? null}
+          onChange={onDistanceChange}
+          cityName={cityName ?? ""}
+        />
+      )}
+
+      <div className="bg-outline my-3 h-px" />
+
+      <p className="text-on-surface-variant mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest">
+        {t("filterCategories")}
+      </p>
+
+      {CATEGORIES.map((cat) => {
+        const isSelected = selectedCategories.includes(cat.slug);
+        const Icon = cat.icon;
+        return (
+          <button
+            key={cat.slug}
+            onClick={() => onToggleCategory(cat.slug)}
+            aria-pressed={isSelected}
+            className={`flex min-h-[44px] w-full items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-left text-sm font-medium transition-colors ${
+              isSelected
+                ? "text-white"
+                : "text-on-surface-variant hover:bg-surface-low"
+            }`}
+            style={isSelected ? { backgroundColor: cat.color } : undefined}
+          >
+            <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+            <span>{t(`categories.${cat.slug}`)}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
 function ScoutCta() {
   const t = useTranslations("discovery");
 
@@ -421,10 +552,10 @@ function GeolocationButton({
 }) {
   const t = useTranslations("discovery");
 
-  // After denial: show "Location unavailable — select your city"
+  // After denial: show "Location unavailable — select your city" + browser settings hint
   if (geoStatus === "denied" || geoStatus === "unavailable") {
     return (
-      <div className="absolute bottom-4 right-4 z-10">
+      <div className="absolute bottom-4 right-4 z-10 flex flex-col items-end gap-1.5">
         <button
           onClick={onOpenCityPicker}
           className="bg-surface-high/95 text-on-surface border-outline flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium shadow-lg backdrop-blur-sm transition-colors hover:bg-white"
@@ -432,6 +563,11 @@ function GeolocationButton({
           <MapPin className="text-on-surface-variant h-4 w-4" strokeWidth={1.75} />
           {t("locationUnavailable")}
         </button>
+        {geoStatus === "denied" && (
+          <p className="bg-surface-high/90 text-on-surface-muted max-w-[220px] rounded-[var(--radius-md)] px-3 py-1.5 text-center text-xs shadow-sm backdrop-blur-sm">
+            {t("locationDeniedHint")}
+          </p>
+        )}
       </div>
     );
   }

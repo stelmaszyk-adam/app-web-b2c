@@ -1,5 +1,6 @@
 import type { Viewport } from "next";
 import { Inter } from "next/font/google";
+import { getLocale } from "next-intl/server";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -14,13 +15,14 @@ const inter = Inter({
   subsets: ["latin", "latin-ext"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
   return (
-    <html className={`${inter.variable} antialiased`}>
+    <html lang={locale} className={`${inter.variable} antialiased`}>
       <body className="flex min-h-screen flex-col">{children}</body>
     </html>
   );

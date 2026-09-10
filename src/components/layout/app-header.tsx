@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type KeyboardEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   MapPin,
@@ -98,7 +98,17 @@ export function AppHeader() {
   const { user, setUser } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const avatarRef = useRef<HTMLDivElement>(null);
+
+  function handleSearchKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      const query = searchValue.trim();
+      if (!query) return;
+      router.push(`/${city.slug}?q=${encodeURIComponent(query)}`);
+      setMobileMenuOpen(false);
+    }
+  }
 
   // Close dropdown when clicking outside.
   useEffect(() => {
@@ -138,7 +148,7 @@ export function AppHeader() {
         {/* City Selector */}
         <button
           onClick={openCityPicker}
-          className="bg-surface-high border-outline text-on-surface hover:bg-surface-low inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-sm font-medium transition-colors"
+          className="bg-surface-high border-outline text-on-surface hover:bg-surface-low inline-flex h-11 items-center gap-1.5 rounded-full border px-3 text-sm font-medium transition-colors"
           aria-label={t("changeCity")}
         >
           <MapPin className="h-4 w-4" strokeWidth={1.75} />
@@ -156,6 +166,9 @@ export function AppHeader() {
             type="text"
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
             className="text-on-surface placeholder:text-on-surface-muted min-w-0 flex-1 border-0 bg-transparent text-sm outline-none"
           />
         </div>
@@ -174,7 +187,7 @@ export function AppHeader() {
         </a>
 
         {/* Language Toggle — desktop */}
-        <div className="bg-surface-low inline-flex h-8 items-center rounded-full p-[3px] max-md:hidden" role="group" aria-label={t("languageToggle")}>
+        <div className="bg-surface-low inline-flex h-11 items-center rounded-full p-[3px] max-md:hidden" role="group" aria-label={t("languageToggle")}>
           <button
             onClick={() => switchLocale("pl")}
             aria-pressed={locale === "pl"}
@@ -217,7 +230,7 @@ export function AppHeader() {
         ) : (
           <Link
             href={signInHref}
-            className="bg-primary text-on-primary hover:opacity-90 inline-flex h-9 items-center rounded-full px-5 text-sm font-medium transition-opacity max-md:hidden"
+            className="bg-primary text-on-primary hover:opacity-90 inline-flex h-11 items-center rounded-full px-5 text-sm font-medium transition-opacity max-md:hidden"
           >
             {t("signIn")}
           </Link>
@@ -309,6 +322,9 @@ export function AppHeader() {
               type="text"
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchPlaceholder")}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
               className="text-on-surface placeholder:text-on-surface-muted min-w-0 flex-1 border-0 bg-transparent text-sm outline-none"
             />
           </div>
@@ -325,7 +341,7 @@ export function AppHeader() {
           </a>
 
           {/* Language Toggle — mobile */}
-          <div className="bg-surface-low mt-3 inline-flex h-8 items-center rounded-full p-[3px]" role="group" aria-label={t("languageToggle")}>
+          <div className="bg-surface-low mt-3 inline-flex h-11 items-center rounded-full p-[3px]" role="group" aria-label={t("languageToggle")}>
             <button
               onClick={() => {
                 switchLocale("pl");

@@ -8,6 +8,7 @@ import { DiscoveryView } from "@/components/discovery/discovery-view";
 
 type Props = {
   params: Promise<{ locale: string; city: string }>;
+  searchParams?: Promise<{ q?: string; [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateStaticParams() {
@@ -36,15 +37,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CityPage({ params }: Props) {
+export default async function CityPage({ params, searchParams }: Props) {
   const { locale, city: citySlug } = await params;
+  const sp = await searchParams;
+  const searchQuery = typeof sp?.q === "string" && sp.q.trim() ? sp.q.trim() : undefined;
+
   const city = getCityBySlug(citySlug);
 
   if (!city) {
     notFound();
   }
 
-  const events = await fetchEvents({ city: citySlug });
+  const events = await fetchEvents({ city: citySlug, search: searchQuery });
 
   return (
     <>
@@ -62,7 +66,7 @@ export default async function CityPage({ params }: Props) {
         </ul>
       </div>
 
-      <DiscoveryView events={events} city={city} />
+      <DiscoveryView events={events} city={city} initialSearch={searchQuery} />
     </>
   );
 }
