@@ -26,9 +26,9 @@ Configure GitHub Actions workflows for continuous integration and continuous dep
 
 ### 2. Branch protection rules
 
-- [ ] P0 Require pull request with at least 1 approval before merging to `main` (per `documentation/ROADMAP.md §0.5.5`) — NOT DONE / unverified: README only documents this as a manual setup step, no confirmed GitHub branch-protection config
-- [ ] P0 Require CI workflow to pass before merging to `main` (per `documentation/ROADMAP.md §0.5.5`) — NOT DONE / unverified: same as above
-- [ ] P0 No direct push to `main` — all changes must go through a PR (per `documentation/ROADMAP.md §0.5.5`) — NOT DONE / unverified: same as above
+- [~] P0 Require pull request with at least 1 approval before merging to `main` (per `documentation/ROADMAP.md §0.5.5`) — NOT DONE / unverified: README only documents this as a manual setup step, no confirmed GitHub branch-protection config — deferred: GitHub branch-protection setting, not code
+- [~] P0 Require CI workflow to pass before merging to `main` (per `documentation/ROADMAP.md §0.5.5`) — NOT DONE / unverified: same as above — deferred: GitHub branch-protection setting, not code
+- [~] P0 No direct push to `main` — all changes must go through a PR (per `documentation/ROADMAP.md §0.5.5`) — NOT DONE / unverified: same as above — deferred: GitHub branch-protection setting, not code
 
 ## Acceptance Criteria
 
