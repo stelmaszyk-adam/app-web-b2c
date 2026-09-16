@@ -36,7 +36,7 @@ Build the SSR event detail page, which is the primary SEO and social-sharing sur
 
 ### 2. Recurring Event Display
 
-- [ ] P0 **Recurring event indicator** on event detail page: — NOT DONE: i18n keys (`partOfSeries`, `viewAllDates`, etc.) exist in messages, but the `Event` type/`mapEvent` have no recurrence fields and the event detail UI never renders a series badge or instance list
+- [~] P0 **Recurring event indicator** on event detail page — deferred: `Event`/`mapEvent`/`RecurringSeries` component and the badge + "View all dates" `<details>` list are implemented and wired into the page, but `GET /events/{id}` doesn't expose the recurrence frequency (only `recurring_template_id`/`is_recurring_exception`) and the only instance list, `GET /events/{id}/series`, requires an organizer/admin token via `EventOwnerGuard`. The web page can't get a real frequency or sibling dates from the public contract; needs a backend task to add these before this can be ticked.
   - "Part of a weekly series" badge (or daily/monthly, based on recurrence type)
   - "View all dates" link -> list/accordion of all upcoming instances in the series
   - Each instance links to its own event detail page

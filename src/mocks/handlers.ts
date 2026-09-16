@@ -190,7 +190,23 @@ export const handlers = [
         { status: 404 },
       );
     }
-    return HttpResponse.json({ data: event });
+
+    const { recurrence, ...rest } = event;
+    const data = recurrence
+      ? {
+          ...rest,
+          recurring_template_id: `${event.id}-template`,
+          recurrence: { frequency: recurrence.type },
+          series_instances: recurrence.instances.map((instance) => ({
+            id: instance.id,
+            start_time: instance.startDate,
+            end_time: instance.startDate,
+            is_cancelled: false,
+          })),
+        }
+      : rest;
+
+    return HttpResponse.json({ data });
   }),
 
   http.get(`${BASE_URL}/api/venues/:id`, ({ params }) => {

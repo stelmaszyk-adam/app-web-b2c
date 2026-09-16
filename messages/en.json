@@ -130,6 +130,7 @@
     "recurrenceWeekly": "Weekly",
     "recurrenceMonthly": "Monthly",
     "partOfSeries": "Part of a {type} series",
+    "partOfSeriesGeneric": "Recurring event",
     "viewAllDates": "View all dates",
     "hideAllDates": "Hide dates",
     "saveInApp": "Save in the app",

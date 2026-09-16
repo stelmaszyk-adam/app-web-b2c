@@ -53,6 +53,16 @@ function mapEvent(raw: any): Event {
       url: p.url,
       position: p.position,
     })),
+    recurringTemplateId: raw.recurring_template_id ?? null,
+    recurrence: raw.recurrence
+      ? { frequency: raw.recurrence.frequency }
+      : null,
+    seriesInstances: raw.series_instances?.map((i: any) => ({
+      id: i.id,
+      startTime: i.start_time,
+      endTime: i.end_time,
+      isCancelled: i.is_cancelled ?? false,
+    })),
   };
 }
 

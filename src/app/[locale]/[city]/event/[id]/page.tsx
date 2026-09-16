@@ -6,6 +6,7 @@ import { fetchEventById } from "@/lib/api";
 import { CATEGORY_MAP } from "@/lib/categories";
 import { formatEventDate, formatEventTime } from "@/lib/types";
 import { EventDetailContent } from "@/components/event/event-detail-content";
+import { RecurringSeries } from "@/components/event/recurring-series";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildEventJsonLd } from "@/lib/structured-data";
 import { TrackEventDetailView } from "@/components/analytics/track-event-detail";
@@ -153,6 +154,9 @@ export default async function EventDetailPage({ params }: Props) {
                 <p className="text-on-surface-variant text-sm">{event.venue.address}</p>
               </div>
             </div>
+
+            {/* Recurring series indicator */}
+            <RecurringSeries event={event} locale={locale} citySlug={citySlug} />
           </div>
 
           {/* Description */}

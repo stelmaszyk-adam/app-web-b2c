@@ -14,6 +14,13 @@ export interface EventPhoto {
   position: number;
 }
 
+export interface EventSeriesInstance {
+  id: string;
+  startTime: string;
+  endTime: string;
+  isCancelled: boolean;
+}
+
 export interface Event {
   id: string;
   name: string;
@@ -31,6 +38,9 @@ export interface Event {
   status?: string;
   isCancelled?: boolean;
   photos?: EventPhoto[];
+  recurringTemplateId?: string | null;
+  recurrence?: { frequency: "daily" | "weekly" | "monthly" } | null;
+  seriesInstances?: EventSeriesInstance[];
 }
 
 export interface VenuePhoto {
