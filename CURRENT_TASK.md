@@ -39,7 +39,7 @@ run `pnpm lint && pnpm type-check` (backend/mobile: also `pnpm test`), then run
 - [x] `tasks/phase-1-core/1-01-layout-and-navigation.md`
 - [x] `tasks/phase-1-core/1-02-map-and-discovery.md`
 - [x] `tasks/phase-1-core/1-03-onboarding-geolocation.md`
-- [ ] `tasks/phase-1-core/1-04-event-detail-page.md` *(1 open)*
+- [x] `tasks/phase-1-core/1-04-event-detail-page.md`
 - [ ] `tasks/phase-1-core/1-05-venue-profile-page.md` *(1 open)*
 - [ ] `tasks/phase-1-core/1-06-community-scout-cta.md` *(2 open)*
 - [ ] `tasks/phase-1-core/1-07-seo-foundations.md` *(4 open)*
