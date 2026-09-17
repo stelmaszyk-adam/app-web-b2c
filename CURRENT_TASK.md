@@ -4,7 +4,7 @@
 > `[ ]`/`[x]` checkboxes inside each task file. Regenerate this file with
 > `python3 scripts/task-utils.py sync web-b2c` (run from the workspace root).
 
-**Next:** `tasks/phase-0-preparation/0-02-mock-environment-msw.md`
+**Next:** `tasks/phase-0-preparation/0-03-github-actions-ci-cd.md`
 
 ---
 
@@ -31,7 +31,7 @@ run `pnpm lint && pnpm type-check` (backend/mobile: also `pnpm test`), then run
 ### Phase 0 — Preparation (check individual files for completion)
 - [x] `tasks/phase-0-preparation/0-00-project-scaffold.md`
 - [x] `tasks/phase-0-preparation/0-01-api-client-setup.md`
-- [ ] `tasks/phase-0-preparation/0-02-mock-environment-msw.md` _(7 open)_
+- [x] `tasks/phase-0-preparation/0-02-mock-environment-msw.md`
 - [ ] `tasks/phase-0-preparation/0-03-github-actions-ci-cd.md` _(1 open)_
 
 ### Phase 1 — Core

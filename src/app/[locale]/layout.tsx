@@ -13,6 +13,7 @@ import { ErrorToastProvider } from "@/components/ui/error-toast";
 import { OfflineBanner } from "@/components/ui/offline-banner";
 import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { WebVitalsReporter } from "@/components/analytics/web-vitals-reporter";
+import { MockingProvider } from "@/components/mocks/mocking-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { COOKIE_ACCESS_TOKEN, decodeTokenUser } from "@/lib/auth-cookies";
 import { TosReconsentWrapper } from "@/components/auth/tos-reconsent-wrapper";
@@ -63,6 +64,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       <AuthProvider initialUser={initialUser}>
         <CityProvider>
           <CookieConsentProvider>
+            <MockingProvider />
             <PostHogProvider />
             <WebVitalsReporter />
             <ErrorToastProvider>
