@@ -15,7 +15,7 @@ export async function POST() {
     return Response.json({ error: "NO_REFRESH_TOKEN" }, { status: 401 });
   }
 
-  const res = await fetch(`${API_BASE}/auth/refresh`, {
+  const res = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refreshToken }),

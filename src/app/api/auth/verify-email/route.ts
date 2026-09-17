@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   }
 
   const res = await fetch(
-    `${API_BASE}/auth/verify-email?token=${encodeURIComponent(token)}`,
+    `${API_BASE}/api/v1/auth/verify-email?token=${encodeURIComponent(token)}`,
     { method: "POST" },
   );
 

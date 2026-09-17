@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "INVALID_BODY" }, { status: 400 });
   }
 
-  const res = await fetch(`${API_BASE}/auth/login`, {
+  const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

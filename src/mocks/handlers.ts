@@ -97,11 +97,10 @@ export const handlers = [
   }),
 
   // Auth endpoints — called only from src/app/api/auth/*/route.ts (Node-side
-  // fetch to the absolute backend URL). Do not dual-register these: the
-  // browser fetches those Next.js route handlers directly at the same
-  // `/api/auth/...` paths, and a browser-side mock here would intercept that
-  // request before it reaches our own route handler's cookie-exchange logic.
-  http.post(`${BASE_URL}/auth/login`, async ({ request }) => {
+  // fetch to the absolute backend URL). No browser code calls these backend
+  // paths directly (the browser hits our own `/api/auth/...` route handlers),
+  // so only the absolute form is registered.
+  http.post(`${BASE_URL}/api/v1/auth/login`, async ({ request }) => {
     const body = (await request.json()) as {
       email?: string;
       password?: string;
@@ -128,7 +127,7 @@ export const handlers = [
     return HttpResponse.json({ data: { accessToken, refreshToken } });
   }),
 
-  http.post(`${BASE_URL}/auth/register`, async ({ request }) => {
+  http.post(`${BASE_URL}/api/v1/auth/register`, async ({ request }) => {
     const body = (await request.json()) as {
       email?: string;
       password?: string;
@@ -150,7 +149,7 @@ export const handlers = [
     );
   }),
 
-  http.post(`${BASE_URL}/auth/refresh`, async ({ request }) => {
+  http.post(`${BASE_URL}/api/v1/auth/refresh`, async ({ request }) => {
     const body = (await request.json()) as { refreshToken?: string };
     if (!body.refreshToken) {
       return HttpResponse.json(
@@ -170,11 +169,11 @@ export const handlers = [
     return HttpResponse.json({ data: { accessToken, refreshToken } });
   }),
 
-  http.post(`${BASE_URL}/auth/logout`, () => {
+  http.post(`${BASE_URL}/api/v1/auth/logout`, () => {
     return HttpResponse.json({ data: null });
   }),
 
-  http.post(`${BASE_URL}/auth/oauth/google`, async ({ request }) => {
+  http.post(`${BASE_URL}/api/v1/auth/oauth/google`, async ({ request }) => {
     const body = (await request.json()) as { code?: string };
     if (!body.code) {
       return HttpResponse.json(
@@ -196,7 +195,7 @@ export const handlers = [
     });
   }),
 
-  http.post(`${BASE_URL}/auth/verify-email`, () => {
+  http.post(`${BASE_URL}/api/v1/auth/verify-email`, () => {
     return HttpResponse.json({ data: null });
   }),
 
@@ -204,29 +203,29 @@ export const handlers = [
   // `/api/...` path (no Next.js route handler owns that exact path, so the
   // real backend is reached only via next.config.ts's rewrite) — dual-register
   // them like the events/venues endpoints.
-  ...dual("post", "/auth/password-reset/request", () => {
+  ...dual("post", "/api/v1/auth/password-reset/request", () => {
     return HttpResponse.json({ data: null });
   }),
 
-  ...dual("post", "/auth/password-reset/confirm", () => {
+  ...dual("post", "/api/v1/auth/password-reset/confirm", () => {
     return HttpResponse.json({ data: null });
   }),
 
-  ...dual("patch", "/auth/password", () => {
+  ...dual("patch", "/api/v1/auth/password", () => {
     return HttpResponse.json({ data: null });
   }),
 
-  ...dual("post", "/auth/tos/accept", () => {
+  ...dual("post", "/api/v1/auth/tos/accept", () => {
     return HttpResponse.json({ data: null });
   }),
 
-  ...dual("delete", "/users/me", () => {
+  ...dual("delete", "/api/v1/users/me", () => {
     return new HttpResponse(null, { status: 204 });
   }),
 
   // Not currently called by any page — kept for parity with the backend
   // contract in case a future feature needs them.
-  http.get(`${BASE_URL}/users/me`, () => {
+  http.get(`${BASE_URL}/api/v1/users/me`, () => {
     return HttpResponse.json({
       data: {
         id: "mock-user-1",
@@ -236,12 +235,12 @@ export const handlers = [
     });
   }),
 
-  http.patch(`${BASE_URL}/users/me`, async ({ request }) => {
+  http.patch(`${BASE_URL}/api/v1/users/me`, async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json({ data: body });
   }),
 
-  http.get(`${BASE_URL}/venues`, ({ request }) => {
+  http.get(`${BASE_URL}/api/v1/venues`, ({ request }) => {
     const url = new URL(request.url);
     const lat = parseFloat(url.searchParams.get("lat") ?? "0");
     const lng = parseFloat(url.searchParams.get("lng") ?? "0");
@@ -265,7 +264,7 @@ export const handlers = [
   // Endpoints used by src/lib/api.ts / src/api/client.ts — reachable from
   // both server components (absolute URL) and client components (relative
   // `/api` URL), so both forms must be registered.
-  ...dual("post", "/events/user-submit", async ({ request }) => {
+  ...dual("post", "/api/v1/events/user-submit", async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     if (!body.name || !body.venue_id || !body.start_time || !body.category) {
       return HttpResponse.json(
@@ -280,7 +279,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 201 });
   }),
 
-  ...dual("get", "/events/search", ({ request }) => {
+  ...dual("get", "/api/v1/events/search", ({ request }) => {
     const url = new URL(request.url);
     const q = (url.searchParams.get("q") ?? "").toLowerCase();
     const lat = url.searchParams.get("lat");
@@ -315,7 +314,7 @@ export const handlers = [
     return HttpResponse.json(paginate(filtered, cursor, limit));
   }),
 
-  ...dual("get", "/events", ({ request }) => {
+  ...dual("get", "/api/v1/events", ({ request }) => {
     const url = new URL(request.url);
     const lat = url.searchParams.get("lat");
     const lng = url.searchParams.get("lng");
@@ -345,7 +344,7 @@ export const handlers = [
     return HttpResponse.json(paginate(filtered, cursor, limit));
   }),
 
-  ...dual("get", "/events/:id", ({ params }) => {
+  ...dual("get", "/api/v1/events/:id", ({ params }) => {
     const event = eventById(params.id as string);
     if (!event) {
       return HttpResponse.json(
@@ -356,7 +355,7 @@ export const handlers = [
     return HttpResponse.json({ data: event });
   }),
 
-  ...dual("get", "/venues/:id", ({ params }) => {
+  ...dual("get", "/api/v1/venues/:id", ({ params }) => {
     const venue = venueById(params.id as string);
     if (!venue) {
       return HttpResponse.json(
@@ -367,7 +366,7 @@ export const handlers = [
     return HttpResponse.json({ data: venue });
   }),
 
-  ...dual("get", "/venues/:id/events", ({ request, params }) => {
+  ...dual("get", "/api/v1/venues/:id/events", ({ request, params }) => {
     const url = new URL(request.url);
     const cursor = url.searchParams.get("cursor");
     const limit = Number(url.searchParams.get("limit") ?? 20);

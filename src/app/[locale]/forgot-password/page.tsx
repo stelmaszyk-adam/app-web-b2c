@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       // Fire-and-forget: always show success to prevent email enumeration.
-      await fetch("/api/auth/password-reset/request", {
+      await fetch("/api/api/v1/auth/password-reset/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

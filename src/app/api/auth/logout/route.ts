@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
   // Best-effort: tell the backend to revoke the refresh token.
   if (refreshToken) {
-    await fetch(`${API_BASE}/auth/logout`, {
+    await fetch(`${API_BASE}/api/v1/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

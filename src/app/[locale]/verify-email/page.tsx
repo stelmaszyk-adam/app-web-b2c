@@ -21,7 +21,7 @@ export default function VerifyEmailPage() {
     if (!user?.email) return;
     setResendLoading(true);
     try {
-      await fetch("/api/auth/password-reset/request", {
+      await fetch("/api/api/v1/auth/password-reset/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email }),

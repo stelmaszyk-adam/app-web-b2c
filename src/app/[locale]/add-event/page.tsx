@@ -232,7 +232,7 @@ export default function AddEventPage() {
     setSubmitting(true);
 
     try {
-      const { error } = await api.POST("/events/user-submit", {
+      const { error } = await api.POST("/api/v1/events/user-submit", {
         body: {
           name: form.name.trim(),
           venue_id: form.venueId || FREE_TEXT_VENUE_ID,

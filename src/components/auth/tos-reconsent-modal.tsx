@@ -20,7 +20,7 @@ export function TosReconsentModal({ onAccepted }: TosReconsentModalProps) {
     setLoading(true);
     setError(false);
     try {
-      const res = await fetch("/api/auth/tos/accept", {
+      const res = await fetch("/api/api/v1/auth/tos/accept", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ version: TOS_VERSION }),

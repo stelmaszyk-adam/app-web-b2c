@@ -39,7 +39,7 @@ export default async function proxy(request: NextRequest) {
 
   if (refreshToken && isTokenExpired(accessToken)) {
     try {
-      const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+      const refreshRes = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refreshToken }),

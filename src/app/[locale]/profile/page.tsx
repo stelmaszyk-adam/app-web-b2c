@@ -44,7 +44,7 @@ export default function ProfilePage() {
     setPasswordError(null);
     setPasswordLoading(true);
     try {
-      const res = await fetch("/api/auth/password", {
+      const res = await fetch("/api/api/v1/auth/password", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentPassword, newPassword }),
@@ -69,7 +69,7 @@ export default function ProfilePage() {
   async function handleDeleteAccount() {
     setDeleteLoading(true);
     try {
-      await fetch("/api/users/me", { method: "DELETE" });
+      await fetch("/api/api/v1/users/me", { method: "DELETE" });
       await fetch("/api/auth/logout", { method: "POST" });
       setUser(null);
       router.push("/");

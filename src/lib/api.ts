@@ -111,7 +111,7 @@ function mapVenue(raw: any): Venue {
  * events than the page size silently only showed the first page.
  */
 async function fetchAllPages(
-  path: "/events" | "/events/search",
+  path: "/api/v1/events" | "/api/v1/events/search",
   baseQuery: Record<string, unknown>,
   pageLimit: number,
 ): Promise<unknown[]> {
@@ -147,7 +147,7 @@ export async function fetchEvents(
 
   if (params.search) {
     const raw = await fetchAllPages(
-      "/events/search",
+      "/api/v1/events/search",
       {
         q: params.search,
         lat: city?.lat,
@@ -167,7 +167,7 @@ export async function fetchEvents(
   }
 
   const raw = await fetchAllPages(
-    "/events",
+    "/api/v1/events",
     {
       lat: city.lat,
       lng: city.lng,
@@ -182,7 +182,7 @@ export async function fetchEvents(
 }
 
 export async function fetchEventById(id: string): Promise<Event | null> {
-  const { data, error } = await api.GET("/events/{id}", {
+  const { data, error } = await api.GET("/api/v1/events/{id}", {
     params: { path: { id } },
   });
 
@@ -195,7 +195,7 @@ export async function fetchEventById(id: string): Promise<Event | null> {
 }
 
 export async function fetchVenueById(id: string): Promise<Venue | null> {
-  const { data, error } = await api.GET("/venues/{id}", {
+  const { data, error } = await api.GET("/api/v1/venues/{id}", {
     params: { path: { id } },
   });
 
@@ -208,7 +208,7 @@ export async function fetchVenueById(id: string): Promise<Venue | null> {
 }
 
 export async function fetchEventsByVenueId(venueId: string): Promise<Event[]> {
-  const { data, error } = await api.GET("/venues/{id}/events", {
+  const { data, error } = await api.GET("/api/v1/venues/{id}/events", {
     params: { path: { id: venueId } },
   });
 

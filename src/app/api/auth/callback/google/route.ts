@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Exchange the authorization code with the backend.
-  const res = await fetch(`${API_BASE}/auth/oauth/google`, {
+  const res = await fetch(`${API_BASE}/api/v1/auth/oauth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code }),
